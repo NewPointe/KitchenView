@@ -1,0 +1,28 @@
+{
+    "web": {
+        "domain": "kitchenview2.newpointe.org",
+        "port": 3000,
+        "cookieSecret": "asdfg"
+    },
+    "db": {
+        "dialect": "mysql",
+        "host": "localhost",
+        "port": 3306,
+        "database": "kitchenview",
+        "username": "kitchenview",
+        "password": "asdfg"
+    },
+    "oauth": {
+        "authorizationURL": "https://connect.squareup.com/oauth2/authorize",
+        "tokenURL": "https://connect.squareup.com/oauth2/token",
+        "scope": "MERCHANT_PROFILE_READ,PAYMENTS_READ,ITEMS_READ",
+        "scopeSeparator": ",",
+        "grant_type": "authorization_code",
+        "clientID": "asdfg",
+        "clientSecret": "asdfg",
+        "callbackURL":"http://localhost:3000/auth/oauth2/callback"
+    },
+    "webhook": {
+        "signatureKey": "asdfg"
+    }
+}

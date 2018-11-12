@@ -1,0 +1,18 @@
+mixin fa-template(style, altText)
+    | &nbsp;
+    if altText
+        i(aria-hidden="true" title=altText)&attributes(attributes)
+        span.sr-only= altText
+    else
+        i(aria-hidden="true")&attributes(attributes)
+    | &nbsp;
+    block
+
+mixin fas(altText)
+    +fa-template(altText).fas&attributes(attributes)
+
+mixin fab(altText)
+    +fa-template(altText).fab&attributes(attributes)
+
+mixin far(altText)
+    +fa-template(altText).far&attributes(attributes)

@@ -1,0 +1,61 @@
+{
+  "name": "kitchenview",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node index.js",
+    "test": "mocha"
+  },
+  "author": "Tschrock <tschrock123@gmail.com>",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "connect-session-sequelize": "^5.2.2",
+    "cookie-parser": "^1.4.3",
+    "debug": "^4.1.0",
+    "express": "^4.16.4",
+    "express-session": "^1.15.6",
+    "http-errors": "^1.7.1",
+    "morgan": "^1.9.1",
+    "passport": "^0.4.0",
+    "passport-oauth2": "^1.4.0",
+    "pug": "^2.0.3",
+    "querybuilder-helper": "0.0.1-beta",
+    "reflect-metadata": "^0.1.12",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5",
+    "sequelize": "^4.41.1",
+    "sequelize-typescript": "^0.6.6",
+    "serve-favicon": "^2.5.0",
+    "winston": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.17.0",
+    "@types/chai": "^4.1.7",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/cookie-parser": "^1.4.1",
+    "@types/debug": "0.0.31",
+    "@types/express": "^4.16.0",
+    "@types/express-session": "^1.15.11",
+    "@types/http-errors": "^1.6.1",
+    "@types/morgan": "^1.7.35",
+    "@types/node": "^10.12.4",
+    "@types/passport": "^0.4.7",
+    "@types/passport-oauth2": "^1.4.7",
+    "@types/request": "^2.48.1",
+    "@types/request-promise-native": "^1.0.15",
+    "@types/serve-favicon": "^2.2.30",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^5.2.0",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.1.6"
+  },
+  "optionalDependencies": {
+    "mysql2": "^1.6.1",
+    "sqlite3": "^4.0.2"
+  }
+}

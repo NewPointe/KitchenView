@@ -1,0 +1,42 @@
+extends ../_layout/main
+
+block head
+    //-
+    +style("https://cdn.jsdelivr.net/npm/jQuery-QueryBuilder/dist/css/query-builder.default.min.css")(
+        integrity="sha384-5aF7oBtNzLCZMRJbyeVzzrrsXB8Ik0UNMJr5pF1J4OAEs2EtAxyMaxl2Is2y2JTW"
+        crossorigin="anonymous"
+    )
+    //-
+        +style("https://cdn.jsdelivr.net/npm/jQuery-QueryBuilder/dist/css/query-builder.dark.min.css")(
+            integrity="sha384-T51DdVf4d6WOH0GQlQgwIonHB7Ad6OU6Up+PF3aZM1jPIQv3kEO4ct36ar3KpyoW"
+            crossorigin="anonymous"
+        )
+    script(
+        defer
+        src="https://cdn.jsdelivr.net/npm/jQuery-QueryBuilder@2.5.2/dist/js/query-builder.standalone.min.js"
+        integrity="sha384-jyAUxIP2f5gvhkNtfV02ghtd3C64h3hR6rVTqmfudWHCHyr4YClVhL+2Pnaw4Ckb"
+        crossorigin="anonymous"
+    )
+    script(defer src="/scripts/query-builder-bs4.js")
+
+block content
+    .container.p-3
+        if Queue
+            h2.text-center Edit Queue
+        else
+            h2.text-center New Queue
+        form.mt-4#edit-queue-form(action=`/api/queues/${ Queue ? Queue.id : '' }` method="POST")
+            input#csrfToken(type="hidden" value=Session.csrfToken)
+            .form-group
+                label.m-0(for="queue-name") Name
+                small.m-0.form-text.text-muted This is the name of your Queue.
+                input.form-control#queue-name(type="text" name="queue-name" value=Queue?Queue.name:"")
+            .form-group
+                label.m-0(for="queue-filter") Filter
+                small.m-0.form-text.text-muted This is the filter for your Queue. It's used to decide what purchases will be added.
+                - const options = { filters: FilterOptions };
+                input.js-query-builder#queue-filter(type="hidden" name="queue-filter" data-qb-class="w-100" data-qb-options=options value=Queue?Queue.filter:"")
+            hr
+            button.btn.btn-success(type="submit") Save
+            | &nbsp;
+            a.btn.btn-link(href="/queues") Cancel

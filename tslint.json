@@ -1,0 +1,69 @@
+{
+    "defaultSeverity": "error",
+    "extends": [],
+    "jsRules": {},
+    "rules": {
+        "no-empty-interface": true, // Forbids empty interfaces.
+        "no-internal-module": true, // Disallows internal module
+        "no-namespace": true, // Disallows use of internal modules and namespaces.
+        "no-reference": true, // Disallows /// <reference path=> imports (use ES6-style imports instead).
+        "no-unnecessary-type-assertion": true, // Warns if a type assertion does not change the type of an expression.
+        "no-var-requires": true, // Disallows the use of require statements except in import statements.
+        "only-arrow-functions": [true, "allow-declarations", "allow-named-functions"], // Disallows traditional (non-arrow) function expressions.
+        "prefer-for-of": true, // Recommends a ‘for-of’ loop over a standard ‘for’ loop if the index is only used to access the array being iterated.
+        "promise-function-async": true, // Requires any function or method that returns a promise to be marked async.
+        "await-promise": [true, "Bluebird"], // Warns for an awaited value that is not a Promise.
+        "ban-comma-operator": true, // Disallows the comma operator to be used.
+        "curly": [true, "ignore-same-line"], // Enforces braces for if/for/do/while statements.
+        "forin": true, // Requires a for ... in statement to be filtered with an if statement.
+        "label-position": true, // Only allows labels in sensible locations.
+        "no-arg": true, // Disallows use of arguments.callee.
+        "no-construct": true, // Disallows access to the constructors of String, Number, and Boolean.
+        "no-duplicate-super": true, // Warns if ‘super()’ appears twice in a constructor.
+        "no-duplicate-switch-case": true, // Prevents duplicate cases in switch statements.
+        "no-duplicate-variable": true, // Disallows duplicate variable declarations in the same block scope.
+        "no-dynamic-delete": true, // Bans usage of the delete operator with computed key expressions.
+        "no-empty": true, // Disallows empty blocks.
+        "no-eval": true, // Disallows eval function invocations.
+        "no-floating-promises": true, // Promises returned by functions must be handled appropriately.
+        "no-for-in-array": true, // Disallows iterating over an array with a for-in loop.
+        "no-implicit-dependencies": true, // Disallows importing modules that are not listed as dependency in the project’s package.jsones
+        "no-invalid-template-strings": true, // Warns on use of ${ in non-template strings.
+        "no-invalid-this": true, // Disallows using the this keyword outside of classes.
+        "no-misused-new": true, // Warns on apparent attempts to define constructors for interfaces or new for classes.
+        "no-object-literal-type-assertion": true, // Forbids an object literal to appear in a type assertion expression. Casting to any is still allowed.
+        "no-return-await": true, // Disallows unnecessary return await.
+        "no-shadowed-variable": true, // Disallows shadowing variable declarations.
+        "no-sparse-arrays": true, // Forbids array literals to contain missing elements.
+        "no-string-throw": true, // Flags throwing plain strings or concatenations of strings.
+        "no-switch-case-fall-through": true, // Disallows falling through case statements.
+        "no-this-assignment": true, // Disallows unnecessary references to this.
+        "no-unbound-method": true, // Warns when a method is used outside of a method call.
+        "no-unsafe-any": true, // Warns when using an expression of type ‘any’ in a dynamic way. Uses are only allowed if they would work for {} | null | undefined. Type casts and tests are allowed. Expressions that work on all values (such as "" + x) are allowed.
+        "no-unsafe-finally": true, // Disallows control flow statements, such as return, continue, break and throws in finally blocks.
+        "no-unused-expression": true, // Disallows unused expression statements.
+        "no-use-before-declare": true, // Disallows usage of variables before their declaration.
+        "no-var-keyword": true, // Disallows usage of the var keyword.
+        "radix": true, // Requires the radix parameter to be specified when calling parseInt.
+        "restrict-plus-operands": true, // When adding two variables, operands must both be of type number or of type string.
+        "strict-type-predicates": true, // Warns for type predicates that are always true or always false. Works for ‘typeof’ comparisons to constants (e.g. ‘typeof foo === “string”’), and equality comparison to ‘null’/’undefined’. (TypeScript won’t let you compare ‘1 === 2’, but it has an exception for ‘1 === undefined’.) Does not yet work for ‘instanceof’. Does not warn for ‘if (x.y)’ where ‘x.y’ is always truthy. For that, see strict-boolean-expressions. This rule requires strictNullChecks to work properly.
+        "triple-equals": true, // Requires === and !== in place of == and !=.
+        "use-isnan": true, // Enforces use of the isNaN() function to check for NaN references instead of a comparison to the NaN constant.
+        "eofline": true, // Ensures the file ends with a newline.
+        "indent": [true, "spaces", 4], // Enforces indentation with tabs or spaces.
+        "linebreak-style": [true, "LF"], // Enforces a consistent linebreak style.
+        "prefer-const": true, // Requires that variable declarations use const instead of let and var if possible.
+        "align": true, // Enforces vertical alignment.
+        "encoding": true, // Enforces UTF-8 file encoding.
+        "file-header": [true, "Copyright|License"], // Enforces a certain header comment for all files, matched by a regular expression.
+        "import-spacing": true, // Ensures proper spacing between import statement keywords
+        "interface-over-type-literal": true, // Prefer an interface declaration over a type literal (type T = { ... })
+        "new-parens": true, // Requires parentheses when invoking a constructor via the new keyword.
+        "no-boolean-literal-compare": true, // Warns on comparison to a boolean literal, as in x === true.
+        "no-reference-import": true, // Don’t <reference types="foo" /> if you import foo anyway.
+        "no-trailing-whitespace": true, // Disallows trailing whitespace at the end of a line.
+        "semicolon": [true, "always"], // Enforces consistent semicolon usage at the end of every statement.
+        "whitespace": false // Enforces whitespace style conventions.
+    },
+    "rulesDirectory": []
+}

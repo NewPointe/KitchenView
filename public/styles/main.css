@@ -1,0 +1,30 @@
+
+/* HTML Overrides
+-------------------------------------------------- */
+html, body { margin: 0; padding: 0; height: 100%; }
+
+/* Flexbox
+-------------------------------------------------- */
+.flex {
+    display: flex;
+}
+.flex-col {
+    flex-direction: column;
+}
+.flex-center {
+    align-items: center;
+    justify-content: center;
+}
+.flex-grow {
+    flex: 1;
+}
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+/* Query Builder
+-------------------------------------------------- */
+.query-builder,
+.query-builder > div {
+    width: 100%;
+}

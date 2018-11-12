@@ -1,0 +1,16 @@
+extends _layout/main
+
+block content
+    .w-100.h-100.p-3.flex.flex-center.flex-col
+        if !CurrentUser
+            h3 Welcome to Kitchen View!
+            p Kitchen View is a simple kitchen ticketing app that queues up orders from Square purchases. Click the Login button to get started!
+            a.btn.btn-lg.btn-success(href="/login") Login
+        else
+            h2 Welcome #{CurrentUser.name}!
+            if !UserQueues || UserQueues.length === 0
+                p You don't have any queues set up yet. Click the button below to get started.
+                a.btn.btn-lg.btn-success(href="/queues/new") Add Queue
+            else
+                p You have #{UserQueues.length} queues. Click the button below to manage them.
+                a.btn.btn-lg.btn-success(href="/queues") Manage My Queues

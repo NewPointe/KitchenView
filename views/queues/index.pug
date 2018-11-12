@@ -1,0 +1,14 @@
+extends ../_layout/main
+
+block content
+    .container.p-4.flex.flex-col
+        h3.text-center.mb-4 Your Queues
+        for queue in UserQueues
+            .flex.border-top
+                div.flex-grow.flex.flex-center= queue.name
+                a.btn.btn-success.m-1(href=`/queues/${queue.id}`) View
+                a.btn.btn-secondary.m-1(href=`/queues/${queue.id}/edit`) Edit
+                a.btn.btn-danger.js-button-delete.m-1(href="#" data-method="DELETE" data-action=`/api/queues/${queue.id}` data-name=queue.name) Delete
+        .flex.flex-center.border-top
+            a.btn.btn-success.m-1(href=`/queues/new`) Add Queue
+

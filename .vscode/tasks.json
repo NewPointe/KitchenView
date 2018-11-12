@@ -1,0 +1,47 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "build",
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "Open browser",
+			"linux": {
+				"command": "xdg-open",
+				"args": [
+					"http://localhost:3000"
+				]
+			},
+			"windows": {
+				"command": "cmd",
+				"args": [
+					"/c",
+					"start",
+					"http://localhost:3000"
+				]
+			},
+			"osx": {
+				"command": "open",
+				"args": [
+					"http://localhost:3000"
+				]
+			},
+			"problemMatcher": []
+		},
+		{
+			"type": "npm",
+			"script": "start",
+			"problemMatcher": [
+				"$tsc"
+			]
+		}
+	]
+}
