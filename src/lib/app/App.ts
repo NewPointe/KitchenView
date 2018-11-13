@@ -23,9 +23,12 @@ import { OAuthManager } from './OAuthManager';
 import { HandleNotFound, HandleErrors, LoadCommonMergeFields } from './ExtraMiddleware';
 import { HttpManager } from './HttpManager';
 
+
 // Common dirs
-const serverRoot = joinPath(__dirname, '..', '..');
-const modelsRoot = joinPath(serverRoot, 'models');
+
+const jsRoot = joinPath(__dirname, '..', '..');
+const modelsRoot = joinPath(jsRoot, 'models');
+const serverRoot = joinPath(jsRoot, '..');
 const publicRoot = joinPath(serverRoot, 'public');
 const viewsRoot = joinPath(serverRoot, 'views');
 
