@@ -8,10 +8,9 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 
 import { Request, Response } from 'express';
-import request from 'request-promise-native';
 
 import { WebhookNotification, WebhookEventType } from './Square/Interfaces';
-import { Account } from 'models/Account';
+import { Account } from '../models/Account';
 import { ApiClient } from './Square/ApiClient';
 
 export function validateWebhook(webhookUrl: string, webhookSignatureKey: string, req: Request) {

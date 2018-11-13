@@ -5,8 +5,7 @@
  */
 'use strict';
 
-import { Sequelize, Table, Column, Model, BelongsTo, AllowNull, ForeignKey, IsNumeric, HasMany, Unique } from 'sequelize-typescript';
-import { Account } from './Account';
+import { Table, Column, Model, BelongsTo, ForeignKey } from 'sequelize-typescript';
 import { Queue } from './Queue';
 import { Item } from './Item';
 

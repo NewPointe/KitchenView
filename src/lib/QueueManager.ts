@@ -7,10 +7,10 @@
 
 import { QueryBuilder } from 'querybuilder-helper';
 import { FilterableItem, queueFilters } from './QueueFilters';
-import { Queue } from 'models/Queue';
-import { Account } from 'models/Account';
-import { Item } from 'models/Item';
-import { QueueItem } from 'models/QueueItem';
+import { Queue } from '../models/Queue';
+import { Account } from '../models/Account';
+import { Item } from '../models/Item';
+import { QueueItem } from '../models/QueueItem';
 
 import debugBuilder from 'debug';
 const debug = debugBuilder('kitchenview:queuemanager');

@@ -11,6 +11,7 @@ import express from 'express';
 import logger from 'morgan';
 
 import { PassportAuthenticator } from '../PassportAuthenticator';
+import { IConfig } from '../Config';
 
 import { controllerToRouter } from '../cp3-express-decorators/AppBuilder';
 import { QueueController, QueueApiController, PageController, AuthController } from '../../controllers';
@@ -35,7 +36,7 @@ export class App {
     private authenticator: PassportAuthenticator;
     private oauthManager: OAuthManager;
 
-    constructor(appConfig: any) {
+    constructor(appConfig: IConfig) {
 
         this.dbManager = new DatabaseManager(modelsRoot, appConfig.db);
 

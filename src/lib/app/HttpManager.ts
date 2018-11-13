@@ -13,7 +13,7 @@ import { Express } from 'express';
 export class HttpManager {
 
     private app: Express;
-    private http: Server;
+    public readonly http: Server;
 
     constructor(app: Express, httpConfig: any) {
 

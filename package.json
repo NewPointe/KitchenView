@@ -2,10 +2,10 @@
   "name": "kitchenview",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node index.js",
+    "start": "npm run build && node dist/index.js",
     "test": "mocha"
   },
   "author": "Tschrock <tschrock123@gmail.com>",

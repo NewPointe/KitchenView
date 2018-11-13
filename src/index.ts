@@ -6,7 +6,7 @@
  */
 'use strict';
 
-import { App } from './lib/app/App.js';
+import { App } from './lib/app/App';
+import { getConfig } from './lib/Config';
 
-import config from './config.json';
-new App(config);
+new App(getConfig());
