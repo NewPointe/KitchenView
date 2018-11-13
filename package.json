@@ -12,7 +12,7 @@
   "license": "MPL-2.0",
   "dependencies": {
     "body-parser": "^1.18.3",
-    "connect-session-sequelize": "^5.2.2",
+    "connect-session-sequelize": "^6.0.0",
     "cookie-parser": "^1.4.3",
     "debug": "^4.1.0",
     "express": "^4.16.4",
@@ -26,7 +26,7 @@
     "reflect-metadata": "^0.1.12",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
-    "sequelize": "^4.41.1",
+    "sequelize": "^4.41.2",
     "sequelize-typescript": "^0.6.6",
     "serve-favicon": "^2.5.0",
     "winston": "^3.1.0"
@@ -41,7 +41,7 @@
     "@types/express-session": "^1.15.11",
     "@types/http-errors": "^1.6.1",
     "@types/morgan": "^1.7.35",
-    "@types/node": "^10.12.4",
+    "@types/node": "^10.12.6",
     "@types/passport": "^0.4.7",
     "@types/passport-oauth2": "^1.4.7",
     "@types/request": "^2.48.1",
