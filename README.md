@@ -19,6 +19,8 @@ Kitchen View 2.0
 
 </div>
 
+## About
+
 KitchenView is the kitchen display system we use in our cafes. We decided to write our own application for this since alternate solutions like Fresh KDS were either broken, unsupported, expensive, or would require purchasing new equipment. Kitchen View 2.0 is the newest version of this system, completely rewritten for the modern web.
 
 Notable Improvements in v2:
@@ -36,6 +38,36 @@ Cons:
 - Currently a work-in-progress, so not a lot of extra features are available.
 - Both your Square device and the display need a reliable internet connection
 - Some orders can take up to a minute to show up - This is a limitation of Square's webhook API and there's nothing I can do about it.
+
+
+## Square Permissions
+
+In order to work, this app needs the following permissons from your Square account:
+ - `MERCHANT_PROFILE_READ` - Allows the app to read basic profile information such as the name of your business, it's location, and your contact email.
+ - `PAYMENTS_READ` - Allows the app to read payment information. This is needed so we can get notifications for new orders and look up what items were purchased. Note: we only store the extracted item information - payment details are not saved.
+ - `ITEMS_READ` - Allows the app to look up the details for individual items.
+
+
+## Development/Deployment
+
+### Square Setup
+
+1. Create a new app at https://connect.squareup.com/apps
+2. Add a webhook for https://yourdomain.example.com/webhook
+
+### App Setup
+
+1. Clone the repo locally.
+2. Copy `config.template.json` to `config.json` and fill it out.
+2. `npm i`
+3. `npm start`
+
+For a production environment you'll want a proxy like NGINX in front of the app so you can set up SSL, which is required for square webhooks. I also recommend using a deamon/management solution like [PM2](http://pm2.keymetrics.io/).
+
+## License
+
+This project is licensed under MPL v2 - see the [LICENSE.md](LICENSE.md) file for details
+
 
 <!-- Link References -->
 
