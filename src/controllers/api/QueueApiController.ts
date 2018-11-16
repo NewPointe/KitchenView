@@ -8,7 +8,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Controller, Get, Post, Delete, RequireUser, ValidateCsrf, ParseJson } from '../../lib/cp3-express-decorators';
 
-import { getAllQueuesForUser, getOneQueueForUser } from '../../lib/Util';
+import { getAllQueuesForUserId, getOneQueueForUserId } from '../../lib/Util';
 import { Queue } from '../../models/Queue';
 
 interface IQueue {
@@ -35,7 +35,7 @@ export class QueueApiController {
     @Get("/")
     public getIndex(req: Request, res: Response, next: NextFunction) {
 
-        getAllQueuesForUser(req.user).then(
+        getAllQueuesForUserId(req.user.id).then(
             queues => res.json(queues.map(queueToJson))
         );
 
@@ -52,7 +52,7 @@ export class QueueApiController {
 
         const queueId = req.params["id"] || queue.id;
         if(typeof queueId !== 'undefined' ) {
-            getOneQueueForUser(req.user, +queueId).then(
+            getOneQueueForUserId(req.user.id, +queueId).then(
                 queue => {
                     if (queue) queue.update({ name: queue.name, filter: queue.filter }).then(
                         () => res.status(204).send(),
@@ -80,7 +80,7 @@ export class QueueApiController {
     public getOne(req: Request, res: Response, next: NextFunction) {
 
         const queueId = +req.params["id"];
-        getOneQueueForUser(req.user, queueId).then(
+        getOneQueueForUserId(req.user.id, queueId).then(
             queue => {
                 if (queue) res.status(200).json({ id: queue.id, name: queue.name, filter: queue.filter })
                 else res.status(404).json({ message: "That Queue does not exist." })
@@ -93,7 +93,7 @@ export class QueueApiController {
     public getEdit(req: Request, res: Response, next: NextFunction) {
 
         const queueId = +req.params["id"];
-        getOneQueueForUser(req.user, queueId).then(
+        getOneQueueForUserId(req.user.id, queueId).then(
             queue => {
                 if (queue) queue.destroy().then(
                     () => res.status(204).send(),

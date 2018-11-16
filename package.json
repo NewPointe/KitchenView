@@ -21,6 +21,7 @@
     "morgan": "^1.9.1",
     "passport": "^0.4.0",
     "passport-oauth2": "^1.4.0",
+    "passport-square": "^2.0.1",
     "pug": "^2.0.3",
     "querybuilder-helper": "0.0.1-beta",
     "reflect-metadata": "^0.1.12",
@@ -29,7 +30,8 @@
     "sequelize": "^4.41.2",
     "sequelize-typescript": "^0.6.6",
     "serve-favicon": "^2.5.0",
-    "winston": "^3.1.0"
+    "winston": "^3.1.0",
+    "ws": "^6.1.0"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
@@ -47,6 +49,7 @@
     "@types/request": "^2.48.1",
     "@types/request-promise-native": "^1.0.15",
     "@types/serve-favicon": "^2.2.30",
+    "@types/ws": "^6.0.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "mocha": "^5.2.0",

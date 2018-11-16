@@ -8,20 +8,18 @@
 import { join as joinPath } from 'path';
 
 import express from 'express';
-import logger from 'morgan';
-
-import { PassportAuthenticator } from '../PassportAuthenticator';
-import { IConfig } from '../Config';
 
 import { controllerToRouter } from '../cp3-express-decorators/AppBuilder';
-import { QueueController, QueueApiController, PageController, AuthController } from '../../controllers';
 
+
+import { AuthMiddleware, CookieMiddleware, SessionMiddleware, LoggingMiddleware, LoadCommonMergeFields, HandleNotFound, HandleErrors } from './Middleware';
 import { DatabaseManager } from './DatabaseManager';
-import { CookieManager } from './CookieManager';
-import { SessionManager } from './SessionManager';
-import { OAuthManager } from './OAuthManager';
-import { HandleNotFound, HandleErrors, LoadCommonMergeFields } from './ExtraMiddleware';
 import { HttpManager } from './HttpManager';
+import { WebsocketManager } from './WebsocketManager';
+import { QueueController, QueueApiController, PageController, AuthController, WebhookController } from '../../controllers';
+
+import { IConfig } from '../Config';
+import { QueueManager } from './QueueManager';
 
 
 // Common dirs
@@ -36,12 +34,14 @@ export class App {
 
     private app: express.Express;
     private dbManager: DatabaseManager;
-    private authenticator: PassportAuthenticator;
-    private oauthManager: OAuthManager;
+    private httpManager: HttpManager;
+    public readonly websocketManager: WebsocketManager;
+    private queueManager: QueueManager;
 
     constructor(appConfig: IConfig) {
 
         this.dbManager = new DatabaseManager(modelsRoot, appConfig.db);
+        this.queueManager = new QueueManager();
 
         this.app = express();
 
@@ -49,29 +49,35 @@ export class App {
         this.app.set('views', viewsRoot);
         this.app.set('view engine', 'pug');
 
-        this.app.use(logger('dev'));
+        const logging = new LoggingMiddleware();
+        const cookie = new CookieMiddleware(appConfig.web.cookieSecret);
+        const session = new SessionMiddleware(appConfig.web.cookieSecret, this.dbManager);
+        const auth = new AuthMiddleware([{
+            id: "square",
+            module: "passport-square",
+            options: appConfig.oauth
+        }]);
 
-        new CookieManager(this.app, appConfig.web.cookieSecret);
-        new SessionManager(this.app, appConfig.web.cookieSecret, this.dbManager);
-
-        this.oauthManager = new OAuthManager();
-        this.oauthManager.loadProvider('oauth2', 'passport-oauth2', appConfig.oauth);
-
-        this.authenticator = new PassportAuthenticator(this.app, this.oauthManager);
-
+        this.app.use(logging.process);
+        this.app.use(cookie.process);
+        this.app.use(session.process);
+        this.app.use(auth.process);
+        this.app.use(auth.getSessionAuthenticator());
         this.app.use(express.static(publicRoot));
-
         this.app.use(LoadCommonMergeFields);
 
         this.app.use('/', controllerToRouter(PageController));
-        this.app.use('/auth', controllerToRouter(AuthController, this.authenticator, { successRedirect: '/', failureRedirect: '/' }));
+        this.app.use('/auth', controllerToRouter(AuthController, auth, { successRedirect: '/', failureRedirect: '/' }));
         this.app.use('/queues', controllerToRouter(QueueController));
         this.app.use('/api/queues', controllerToRouter(QueueApiController));
+        this.app.use('/webhook', controllerToRouter(WebhookController, this.queueManager));
 
         this.app.use(HandleNotFound);
         this.app.use(HandleErrors);
         
-        new HttpManager(this.app, appConfig.web);
+        this.httpManager = new HttpManager(this.app, appConfig.web);
+        
+        this.websocketManager = new WebsocketManager(this.httpManager, session, auth, this.queueManager);
 
     }
 

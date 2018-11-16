@@ -8,13 +8,13 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { Controller, Get } from '../lib/cp3-express-decorators';
-import { PassportAuthenticator } from '../lib/PassportAuthenticator';
+import { AuthMiddleware } from '../lib/app/Middleware';
 
 @Controller()
 export class AuthController {
 
     constructor(
-        private authenticator: PassportAuthenticator,
+        private authenticator: AuthMiddleware,
         private authCallbackParameters: {}
     ) { }
 

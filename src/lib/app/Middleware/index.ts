@@ -5,8 +5,8 @@
  */
 'use strict';
 
-export * from './api';
-export * from './AuthController';
-export * from './PageController';
-export * from './QueueController';
-export * from './WebbhookController';
+export * from './AuthMiddleware';
+export * from './CookieMiddleware';
+export * from './ExtraMiddleware';
+export * from './SessionMiddleware';
+export * from './LoggingMiddleware';

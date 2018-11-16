@@ -41,7 +41,7 @@ export class ApiClient {
     }
 
     public async getPayment(location_id: string, payment_id: string) {
-        this.getJSON<Payment>(`/v1/${location_id}/payments/${payment_id}`);
+        return this.getJSON<Payment>(`/v1/${location_id}/payments/${payment_id}`);
     }
 
 

@@ -15,7 +15,7 @@ export class PassportAuthenticator {
     private app: Express;
     private oauthManager: OAuthManager;
 
-    private passport: Authenticator;
+    public readonly passport: Authenticator;
     
     constructor(app: Express, oauthManager: OAuthManager) {
 

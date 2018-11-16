@@ -33,36 +33,7 @@ export function validateWebhook(webhookUrl: string, webhookSignatureKey: string,
     }
 }
 
-export async function processWebhook(req: Request, res: Response) {
-
-    // Always respond with a 200
-    res.sendStatus(200);
-
-    // Make sure the body is valid
-    if(!isNotification(req.body)) throw new Error("Body in unexpected format.");
-    
-    const notification = req.body;
-
-    // We only care about payment updates.
-    if(notification.event_type !== WebhookEventType.PAYMENT_UPDATED) return; 
-
-    // Try to find a linked account
-    const account = await Account.findOne({ where: { external_id: notification.merchant_id } });
-    if(!account) throw Error(`Account for merchant '${notification.merchant_id}' could not be found.`);
-
-    // Make sure we have an access token
-    if(!account.auth_token) throw Error(`Account for merchant '${notification.merchant_id}' has no access token.`);
-
-    // Get the payment details so we can figure out what items they ordered
-    new ApiClient(account.auth_token).getPayment(notification.location_id, notification.entity_id).then(
-        payment => {
-            
-        }
-    )
-
-}
-
-function isNotification(thing: any): thing is WebhookNotification {
+export function isNotification(thing: any): thing is WebhookNotification {
     return "merchant_id" in thing && typeof thing.merchant_id === "string"
         && "location_id" in thing && typeof thing.location_id === "string"
         && "event_type" in thing && typeof thing.event_type === "string"

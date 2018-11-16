@@ -8,7 +8,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Controller, Get, RequireUser, GenerateCsrf } from '../lib/cp3-express-decorators';
 
-import { getClientFilterOptions, getAllQueuesForUser, getOneQueueForUser } from '../lib/Util';
+import { getClientFilterOptions, getAllQueuesForUserId, getOneQueueForUserId } from '../lib/Util';
 
 @Controller()
 @RequireUser()
@@ -17,7 +17,7 @@ export class QueueController {
     @Get("/")
     public getIndex(req: Request, res: Response, next: NextFunction) {
 
-        getAllQueuesForUser(req.user).then(
+        getAllQueuesForUserId(req.user.id).then(
             UserQueues => res.render('queues', { UserQueues })
         );
 
@@ -35,7 +35,7 @@ export class QueueController {
     public getOne(req: Request, res: Response, next: NextFunction) {
 
         const queueId = +req.params["id"];
-        getOneQueueForUser(req.user, queueId).then(
+        getOneQueueForUserId(req.user.id, queueId).then(
             Queue => res.render('queues/watch', { Queue })
         );
         
@@ -46,7 +46,7 @@ export class QueueController {
     public getEdit(req: Request, res: Response, next: NextFunction) {
 
         const queueId = +req.params["id"];
-        getOneQueueForUser(req.user, queueId).then(
+        getOneQueueForUserId(req.user.id, queueId).then(
             Queue => res.render('queues/edit', { Queue, FilterOptions: getClientFilterOptions() })
         );
         

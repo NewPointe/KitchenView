@@ -46,9 +46,9 @@ export function getClientFilterOptions() {
     }))
 }
 
-export async function getAllQueuesForUser(user: Account) {
-    return Queue.findAll({ where: { accountId: user.id } });
+export async function getAllQueuesForUserId(userId: number) {
+    return Queue.findAll({ where: { accountId: userId } });
 }
-export async function getOneQueueForUser(user: Account, queueId: number) {
-    return Queue.findOne({ where: { id: queueId, accountId: user.id } });
+export async function getOneQueueForUserId(userId: number, queueId: number) {
+    return Queue.findOne({ where: { id: queueId, accountId: userId } });
 }

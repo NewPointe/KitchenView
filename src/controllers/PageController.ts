@@ -8,7 +8,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Controller, Get } from '../lib/cp3-express-decorators';
 
-import { getAllQueuesForUser } from '../lib/Util';
+import { getAllQueuesForUserId } from '../lib/Util';
 
 
 
@@ -19,7 +19,7 @@ export class PageController {
     public getIndex(req: Request, res: Response, next: NextFunction) {
 
         if (!req.user) res.render('index');
-        else getAllQueuesForUser(req.user).then(
+        else getAllQueuesForUserId(req.user.Id).then(
             UserQueues => res.render('index', { UserQueues })
         );
         
@@ -27,7 +27,7 @@ export class PageController {
 
     @Get("/login")
     public getLogin(req: Request, res: Response, next: NextFunction) {
-        res.redirect('/auth/oauth2');
+        res.redirect('/auth/square');
     }
 
     @Get("/logout")

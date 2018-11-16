@@ -5,7 +5,7 @@
  */
 
 import { WebhookNotification, Payment } from "./Square/Interfaces";
-import { QueueManager } from "./QueueManager";
+import { QueueManager } from "./app/QueueManager";
 
 'use strict';
 
