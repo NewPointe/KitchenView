@@ -10,18 +10,30 @@ import { Profile } from 'passport';
 import { promise2Callback, getNewOrUpdatedAccount } from './Util';
 import { Account } from '../models/Account';
 import { ApiClient } from './Square/ApiClient';
+import { Merchant, WebhookEventType } from './Square/Interfaces';
 
 export type VerifyDone = (error: Error | null, user?: Account) => void;
 export type VerifyFunction = (token: string, tokenSecret: string, profile: Profile, onDone: VerifyDone) => void;
 export type DeserializeDone = VerifyDone;
 export type SerializeDone = (error: Error | null, userId?: number) => void;
 
+async function registerAllLocations(accessToken: string) {
+    const client = new ApiClient(accessToken);
+    const locations = await client.getLocations();
+    for(const loc of locations) {
+        await client.registerWebhooks(loc.id, [WebhookEventType.PAYMENT_UPDATED]);
+    }
+}
+
 /**
  * Verifies and returns a User.
  */
 export function verifyUser(accessToken: string, refreshToken: string, profile: Profile, onDone: VerifyDone) {
+    const merchant = (profile as any)._squareProfile as Merchant;
     promise2Callback<Account>(
-        new ApiClient(accessToken).getMe().then(merchant => getNewOrUpdatedAccount(accessToken, merchant)),
+        getNewOrUpdatedAccount(accessToken, merchant).then(
+            acct => registerAllLocations(accessToken).then(() => acct)
+        ),
         onDone
     );
 }

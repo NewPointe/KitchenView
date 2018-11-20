@@ -6,7 +6,7 @@
 'use strict';
 
 import request from 'request-promise-native';
-import { Merchant, Payment, RenewTokenResponse } from './Interfaces';
+import { Merchant, Payment, RenewTokenResponse, WebhookEventType } from './Interfaces';
 
 export class ApiClient {
 
@@ -34,6 +34,15 @@ export class ApiClient {
             json: true
         });
     }
+    private async putJSON<T>(endpoint: string, data: any): Promise<T> {
+        return request({
+            method: 'PUT',
+            uri: `https://connect.squareup.com${endpoint}`,
+            headers: { 'Authorization': `Bearer ${this.accessToken}` },
+            json: true,
+            body: data
+        });
+    }
 
 
     public async getMe() {
@@ -44,5 +53,12 @@ export class ApiClient {
         return this.getJSON<Payment>(`/v1/${location_id}/payments/${payment_id}`);
     }
 
+    public async getLocations() {
+        return this.getJSON<Merchant[]>(`/v1/me/locations`);
+    }
+
+    public async registerWebhooks(entity_id: string, types: WebhookEventType[]) {
+        return this.putJSON<WebhookEventType[]>(`/v1/${entity_id}/webhooks`, types);
+    }
 
 }
