@@ -47,14 +47,14 @@ export class QueueApiController {
     @ValidateCsrf()
     public createOrEdit(req: Request, res: Response, next: NextFunction) {
 
-        const queue = req.body;
-        if (!checkQueue(queue)) res.status(400).json({ message: "Queue must have a 'name' and 'filter'." });
+        const newQueue = req.body;
+        if (!checkQueue(newQueue)) res.status(400).json({ message: "Queue must have a 'name' and 'filter'." });
 
-        const queueId = req.params["id"] || queue.id;
+        const queueId = req.params["id"] || newQueue.id;
         if(typeof queueId !== 'undefined' ) {
             getOneQueueForUserId(req.user.id, +queueId).then(
                 queue => {
-                    if (queue) queue.update({ name: queue.name, filter: queue.filter }).then(
+                    if (queue) queue.update({ name: newQueue.name, filter: newQueue.filter }).then(
                         () => res.status(204).send(),
                         err => res.status(500).json({ message: err.message })
                     )
@@ -65,8 +65,8 @@ export class QueueApiController {
         }
         else {
             Queue.create({
-                name: queue.name,
-                filter: queue.filter,
+                name: newQueue.name,
+                filter: newQueue.filter,
                 accountId: req.user.id
             }).then(
                 queue => res.status(200).json(queueToJson(queue)),
