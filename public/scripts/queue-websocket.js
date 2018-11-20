@@ -10,7 +10,7 @@ function setUpSocket() {
     // Map of recent item deletions, used to handle potential out-of-order notifications
     const itemDeletionLog = new Map();
 
-    const ws = new WebSocket("ws://" + location.host + "/");
+    const ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/");
     ws.onopen = () => {
         
         while(itemScreen.firstChild) itemScreen.removeChild(itemScreen.firstChild);
