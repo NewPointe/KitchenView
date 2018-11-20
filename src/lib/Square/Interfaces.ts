@@ -394,7 +394,7 @@ export interface PaymentItemization {
     quantity: number;
     itemization_type: PaymentItemization_Type;
     item_detail: PaymentItemDetail;
-    notes: string;
+    notes?: string;
     item_variation_name: string;
     total_money: Money;
     single_quantity_money: Money;

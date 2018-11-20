@@ -19,7 +19,7 @@ export class PageController {
     public getIndex(req: Request, res: Response, next: NextFunction) {
 
         if (!req.user) res.render('index');
-        else getAllQueuesForUserId(req.user.Id).then(
+        else getAllQueuesForUserId(req.user.id).then(
             UserQueues => res.render('index', { UserQueues })
         );
         

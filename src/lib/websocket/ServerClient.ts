@@ -13,9 +13,11 @@ import WebSocket from 'ws';
 
 import { WebsocketServer } from './WebsocketServer';
 import { tryParseMessage } from './MessageUtils';
-import { getOneQueueForUserId } from '../Util';
+
 import { Queue } from '../../models/Queue';
 import { Item } from '../../models/Item';
+import { QueueItem } from '../../models/QueueItem';
+import { getOneQueueForUserId } from '../Util';
 
 const KEEPALIVE_INTERVAL = 1000 * 5; // 5 seconds
 const KEEPALIVE_MAX_TIME = 1000 * 20; // 20 seconds (4 missed pings)
@@ -120,7 +122,8 @@ export class ServerClient {
                 case 'UNREGISTER':
                     return this.OnMessage_UnregisterQueue(+message[1]);
                 case 'REMOVE':
-                    return this.OnMessage_RemoveQueueItem(+message[1]);
+                    const messageAlt = message as unknown as [string, number, number];
+                    return this.OnMessage_RemoveQueueItem(+messageAlt[1], +messageAlt[2]);
             }
         } else {
             this.send(JSON.stringify(['ERROR', "Invalid Message"]));
@@ -146,11 +149,20 @@ export class ServerClient {
 
     // Message Handling
     private OnMessage_RegisterQueue(queueId: number) {
-        getOneQueueForUserId(this.authorizedUserId, queueId).then(
+        Queue.findOne({
+            where: { id: queueId, accountId: this.authorizedUserId },
+            include: [{
+                model: QueueItem,
+                include: [Item]
+            }]
+        }).then(
             queue => {
                 if (queue) {
                     this.watchedQueueIds.add(queue.id);
                     this.send(JSON.stringify(['REGISTERED', queueId]));
+                    for(const queueItem of queue.queueItems) {
+                        this.OnQueueItemAdded(queueItem.item, queue);
+                    }
                 }
                 else {
                     this.send(JSON.stringify(['REGISTER_ERROR', queueId, "Queue does not exist."]));
@@ -167,12 +179,20 @@ export class ServerClient {
         this.send(JSON.stringify(['UNREGISTERED', queueId]));
     }
 
-    private OnMessage_RemoveQueueItem(queueItemId: number) {
-        
+    private OnMessage_RemoveQueueItem(itemId: number, queueId: number) {
+        getOneQueueForUserId(this.authorizedUserId, queueId).then(
+            queue => {
+                if(queue) this.server.queueManager.removeItemFromQueue(itemId, queueId);
+                else this.send(JSON.stringify(['REMOVE_ERROR', queueId, "Queue does not exist."]));
+            },
+            err => {
+                this.send(JSON.stringify(['REMOVE_ERROR', queueId, err.message]));
+            }
+        );
     }
 
     // Queue events
-    public OnQueueItemAdded(queue: Queue, item: Item) {
+    public OnQueueItemAdded(item: Item, queue: Queue) {
         if (this.watchedQueueIds.has(queue.id))
             this.send(JSON.stringify(['ADDED', {
                 queue: {
@@ -191,9 +211,9 @@ export class ServerClient {
             }]));
     }
 
-    public OnQueueItemRemoved(queueId: number, itemId: number) {
+    public OnQueueItemRemoved(itemId: number, queueId: number) {
         if (this.watchedQueueIds.has(queueId))
-            this.send(JSON.stringify(['REMOVED', queueId, itemId]));
+            this.send(JSON.stringify(['REMOVED', itemId, queueId]));
     }
 
 }

@@ -18,7 +18,7 @@ import { Item } from '../../models/Item';
 export class WebsocketServer {
     
     private server: Server;
-    private queueManager: QueueManager
+    public readonly queueManager: QueueManager
     private clients: Set<ServerClient> = new Set<ServerClient>();
 
     constructor(options: ServerOptions, queueManager: QueueManager) {
@@ -58,11 +58,11 @@ export class WebsocketServer {
         console.log("Websocket Server now listening");
     }
 
-    public OnQueueItemAdd(queue: Queue, item: Item) {
-        this.clients.forEach(c => c.OnQueueItemAdded(queue, item));
+    public OnQueueItemAdd(item: Item, queue: Queue) {
+        this.clients.forEach(c => c.OnQueueItemAdded(item, queue));
     }
 
-    public OnQueueItemRemove(queueId: number, itemId: number) {
-        this.clients.forEach(c => c.OnQueueItemRemoved(queueId, itemId));
+    public OnQueueItemRemove(itemId: number, queueId: number) {
+        this.clients.forEach(c => c.OnQueueItemRemoved(itemId, queueId));
     }
 }

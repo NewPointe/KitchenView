@@ -54,7 +54,7 @@ html(lang="en")
         script(defer src="/scripts/main.js")
 
         // Live Queue JS
-        script(defer src="/scripts/livequeue.js")
+        script(defer src="/scripts/queue-websocket.js")
 
         block head
 
@@ -86,7 +86,7 @@ html(lang="en")
                             li.nav-item
                                 a.nav-link(href="/login") Login
 
-        main.flex-grow#livequeuelist
+        main.flex-grow#item-screen(data-queue-id=Queue.id)
 
         footer.flex.flex-center.text-light.bg-dark.p-1
             div &copy; #{ (new Date()).getFullYear() } NewPointe Community Church

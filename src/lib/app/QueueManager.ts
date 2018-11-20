@@ -39,17 +39,17 @@ export class QueueManager extends EventEmitter {
     public static async saveItemization(item: PaymentItemization) {
         return await Item.create({
             name: item.name,
-            quantity: item.quantity,
-            category: item.item_detail.category_name,
-            variation: item.item_variation_name,
-            notes: item.notes,
+            quantity: +item.quantity,
+            category: item.item_detail.category_name || "",
+            variation: item.item_variation_name || "",
+            notes: item.notes || "",
             modifiers: item.modifiers.map(m => m.name).join(", "),
         });
     }
 
     public async addItemToQueue(item: Item, queue: Queue) {
         await QueueItem.create({ itemId: item.id, queueId: queue.id });
-        this.emit('removeItem', item, queue);
+        this.emit('addItem', item, queue);
     }
 
     public async removeItemFromQueue(itemId: number, queueId: number) {

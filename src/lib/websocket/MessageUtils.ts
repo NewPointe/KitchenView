@@ -27,7 +27,7 @@ type ArrMessage = [MessageType, string | number | boolean];
 
 function validateMessage(thing: any): thing is ArrMessage {
     return Array.isArray(thing)
-        && thing.length === 2
+        && thing.length >= 2
         && thing[0] in MessageType
         && (
             typeof thing[1] !== 'string'

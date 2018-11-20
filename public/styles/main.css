@@ -28,3 +28,51 @@ html, body { margin: 0; padding: 0; height: 100%; }
 .query-builder > div {
     width: 100%;
 }
+
+#item-screen {
+    overflow: auto;
+}
+
+
+.item {
+    width: 100%;
+    padding: 14px 24px;
+    display: grid;
+    grid-template-columns: max-content minmax(25%, max-content) auto auto 100px;
+    grid-gap: 22px;
+    font-size: 24px;
+}
+
+.item:nth-child(2n) {
+    background-color: #eee;
+}
+
+.item > div {
+    display: flex;
+    align-items: center;
+}
+
+.item-quantity {
+    font-size: 28px;
+}
+
+.item-name {
+    font-size: 28px;
+}
+/* .item-category::before {
+    content: "Category: ";
+    margin-right: 10px;
+    font-size: 18px;
+}
+.item-modifiers::before {
+    content: "Modifiers: ";
+    margin-right: 10px;
+    font-size: 18px;
+} */
+
+.item > .btn-danger {
+    margin: -5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
