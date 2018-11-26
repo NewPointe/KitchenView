@@ -55,4 +55,8 @@ export class Item extends Model<Item> {
     @BelongsToMany(() => Queue, () => QueueItem)
     public queues!: Queue[];
 
+    /** The payment the item is from. */
+    @Column(Sequelize.STRING(255))
+    public paymentId!: string;
+
 }

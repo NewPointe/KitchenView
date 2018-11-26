@@ -13,6 +13,7 @@ import { isNotification } from '../lib/SquareWebhook';
 import { WebhookEventType } from '../lib/Square/Interfaces';
 import { Account } from '../models/Account';
 import { ApiClient } from '../lib/Square/ApiClient';
+import { Item } from '../models/Item';
 
 @Controller()
 export class WebhookController {
@@ -47,21 +48,28 @@ export class WebhookController {
             // Make sure we have an access token
             if (!account.auth_token) throw Error(`Account for merchant '${body.merchant_id}' has no access token.`);
 
-            // Get the payment details so we can figure out what items they ordered
-            new ApiClient(account.auth_token).getPayment(body.location_id, body.entity_id).then(
-                payment => {
-                    for (const itemization of payment.itemizations) {
-                        this.queueManager.handleItem({
-                            item: itemization,
-                            payment: payment,
-                            notification: body
-                        })
+            // Check if we've already handled this payment
+            Item.count({
+                where: { paymentId: body.entity_id }
+            }).then(
+                count => {
+                    if (count === 0) {
+
+                        // Get the payment details so we can figure out what items they ordered
+                        new ApiClient(account.auth_token).getPayment(body.location_id, body.entity_id).then(
+                            payment => {
+                                for (const itemization of payment.itemizations) {
+                                    this.queueManager.handleItem({
+                                        item: itemization,
+                                        payment: payment,
+                                        notification: body
+                                    })
+                                }
+                            }
+                        );
                     }
                 }
             );
-
         });
-
     }
-
 }

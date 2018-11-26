@@ -13,7 +13,7 @@ import { Item } from '../../models/Item';
 import { QueueItem } from '../../models/QueueItem';
 
 import { EventEmitter } from 'events';
-import { PaymentItemization } from '../Square/Interfaces';
+import { PaymentItemization, Payment } from '../Square/Interfaces';
 
 
 export class QueueManager extends EventEmitter {
@@ -36,7 +36,7 @@ export class QueueManager extends EventEmitter {
         });
     }
 
-    public static async saveItemization(item: PaymentItemization) {
+    public static async saveItemization(payment: Payment, item: PaymentItemization) {
         return await Item.create({
             name: item.name,
             quantity: +item.quantity,
@@ -44,6 +44,7 @@ export class QueueManager extends EventEmitter {
             variation: item.item_variation_name || "",
             notes: item.notes || "",
             modifiers: item.modifiers.map(m => m.name).join(", "),
+            paymentId: payment.id
         });
     }
 
@@ -74,7 +75,7 @@ export class QueueManager extends EventEmitter {
         if (matchingQueues.length > 0) {
 
             // Save the item
-            const item = await QueueManager.saveItemization(purchasedItem.item);
+            const item = await QueueManager.saveItemization(purchasedItem.payment, purchasedItem.item);
 
             // Add it to the right queues
             matchingQueues.forEach(queue => this.addItemToQueue(item, queue));
