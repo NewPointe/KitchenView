@@ -17,8 +17,8 @@ $('#edit-queue-form').on('submit', e => {
         body: JSON.stringify(data)
     }).then(
         res => {
-            if(res.ok) {
-                window.location = '.';
+            if (res.ok) {
+                window.location = '..';
             }
             else {
                 alert(`An error occured with your submission. ${res.statusText}`);
@@ -35,10 +35,11 @@ $('.js-button-delete').on('click', e => {
 
     const action = btn.dataset.action;
     const method = btn.dataset.method;
+    const typename = btn.dataset.typename;
     const name = btn.dataset.name;
 
-    const confirm = window.confirm(`Are you sure you want to delete queue '${name}'?`);
-    if(confirm) {
+    const confirm = window.confirm(`Are you sure you want to delete ${typename} '${name}'?`);
+    if (confirm) {
 
         fetch(action, {
             method,
@@ -46,7 +47,7 @@ $('.js-button-delete').on('click', e => {
             credentials: "include"
         }).then(
             res => {
-                if(res.ok) {
+                if (res.ok) {
                     window.location = window.location;
                 }
                 else {
@@ -56,5 +57,33 @@ $('.js-button-delete').on('click', e => {
             err => alert(`A network error occured, please try again later. ${err.message}`)
         );
     }
+
+})
+
+$('.js-button-add').on('click', e => {
+    e.preventDefault();
+    const btn = e.target;
+
+    const action = btn.dataset.action;
+    const method = btn.dataset.method;
+    const body = btn.dataset.body;
+
+    fetch(action, {
+        method,
+        redirect: "follow",
+        credentials: "include",
+        headers: { "Accept": "application/json", "Content-Type": "application/json; charset=utf-8" },
+        body: body
+    }).then(
+        res => {
+            if (res.ok) {
+                window.location = window.location;
+            }
+            else {
+                alert(`An error occurred: ${res.statusText}`);
+            }
+        },
+        err => alert(`A network error occured, please try again later. ${err.message}`)
+    );
 
 })

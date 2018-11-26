@@ -31,16 +31,6 @@ export class QueueController {
         
     }
 
-    @Get("/:id")
-    public getOne(req: Request, res: Response, next: NextFunction) {
-
-        const queueId = +req.params["id"];
-        getOneQueueForUserId(req.user.id, queueId).then(
-            Queue => res.render('queues/watch', { Queue })
-        );
-        
-    }
-
     @Get("/:id/edit")
     @GenerateCsrf()
     public getEdit(req: Request, res: Response, next: NextFunction) {

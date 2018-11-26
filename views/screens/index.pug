@@ -1,0 +1,15 @@
+extends ../_layout/main
+
+block content
+    .container.p-4.flex.flex-col
+        h3.text-center.mb-4 #{Queue.name} Screen Keys
+        for screen in Queue.screens
+            .flex.border-top
+                - const screenUrl = `${screen.viewKey}/${screen.viewSecret}`;
+                div.flex-grow.flex.flex-center= screenUrl
+                a.btn.btn-success.m-1(href=`/screen/${screenUrl}`) View
+                a.btn.btn-danger.js-button-delete.m-1(href="#" data-method="DELETE" data-action=`/api/screens/${screen.id}` data-typename="screen key" data-name=screenUrl) Delete
+        .flex.flex-center.border-top
+            - const addBody = { queueId: Queue.id, csrfToken: Session.csrfToken };
+            a.btn.btn-success.js-button-add.m-1(href="#" data-method="POST" data-action=`/api/screens` data-body=addBody) Add Screen Key
+

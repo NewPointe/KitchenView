@@ -37,7 +37,7 @@ export class ServerClient {
     private keepaliveId: NodeJS.Timeout | null = null;
     private keepaliveLastContact: number = 0;
     private authorizedUserId: number;
-    private watchedQueueIds = new Set<number>();
+    private authorizedQueueId: number;
 
     constructor(socket: WebSocket, request: IncomingMessage, server: WebsocketServer) {
         this.socket = socket;
@@ -52,8 +52,24 @@ export class ServerClient {
         this.socket.on('unexpected-response', this.OnUnexpectedResponse.bind(this));
         this.socket.on('upgrade', this.OnUpgrade.bind(this));
 
-        const requestExt = request as Request;
-        this.authorizedUserId = requestExt.user.id;
+        this.authorizedUserId = (request as any).userId;
+        this.authorizedQueueId = (request as any).queueId;
+        
+        Queue.findOne({
+            where: { id: this.authorizedQueueId },
+            include: [{
+                model: QueueItem,
+                include: [Item]
+            }]
+        }).then(
+            queue => {
+                if (queue)
+                    for (const queueItem of queue.queueItems) {
+                        this.OnQueueItemAdded(queueItem.item, queue);
+                    }
+            },
+            () => { }
+        );
 
         this.startKeepalive();
     }
@@ -117,10 +133,6 @@ export class ServerClient {
         const message = tryParseMessage(rawmessage.toString());
         if (message) {
             switch (message[0]) {
-                case 'REGISTER':
-                    return this.OnMessage_RegisterQueue(+message[1]);
-                case 'UNREGISTER':
-                    return this.OnMessage_UnregisterQueue(+message[1]);
                 case 'REMOVE':
                     const messageAlt = message as unknown as [string, number, number];
                     return this.OnMessage_RemoveQueueItem(+messageAlt[1], +messageAlt[2]);
@@ -147,42 +159,10 @@ export class ServerClient {
         // noop
     }
 
-    // Message Handling
-    private OnMessage_RegisterQueue(queueId: number) {
-        Queue.findOne({
-            where: { id: queueId, accountId: this.authorizedUserId },
-            include: [{
-                model: QueueItem,
-                include: [Item]
-            }]
-        }).then(
-            queue => {
-                if (queue) {
-                    this.watchedQueueIds.add(queue.id);
-                    this.send(JSON.stringify(['REGISTERED', queueId]));
-                    for(const queueItem of queue.queueItems) {
-                        this.OnQueueItemAdded(queueItem.item, queue);
-                    }
-                }
-                else {
-                    this.send(JSON.stringify(['REGISTER_ERROR', queueId, "Queue does not exist."]));
-                }
-            },
-            err => {
-                this.send(JSON.stringify(['REGISTER_ERROR', queueId, err.message]));
-            }
-        );
-    }
-
-    private OnMessage_UnregisterQueue(queueId: number) {
-        this.watchedQueueIds.delete(queueId);
-        this.send(JSON.stringify(['UNREGISTERED', queueId]));
-    }
-
     private OnMessage_RemoveQueueItem(itemId: number, queueId: number) {
         getOneQueueForUserId(this.authorizedUserId, queueId).then(
             queue => {
-                if(queue) this.server.queueManager.removeItemFromQueue(itemId, queueId);
+                if (queue) this.server.queueManager.removeItemFromQueue(itemId, queueId);
                 else this.send(JSON.stringify(['REMOVE_ERROR', queueId, "Queue does not exist."]));
             },
             err => {
@@ -193,7 +173,7 @@ export class ServerClient {
 
     // Queue events
     public OnQueueItemAdded(item: Item, queue: Queue) {
-        if (this.watchedQueueIds.has(queue.id))
+        if (this.authorizedQueueId === queue.id)
             this.send(JSON.stringify(['ADDED', {
                 queue: {
                     id: queue.id,
@@ -212,7 +192,7 @@ export class ServerClient {
     }
 
     public OnQueueItemRemoved(itemId: number, queueId: number) {
-        if (this.watchedQueueIds.has(queueId))
+        if (this.authorizedQueueId === queueId)
             this.send(JSON.stringify(['REMOVED', itemId, queueId]));
     }
 

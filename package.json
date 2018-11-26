@@ -11,6 +11,7 @@
   "author": "Tschrock <tschrock123@gmail.com>",
   "license": "MPL-2.0",
   "dependencies": {
+    "base64url": "^3.0.1",
     "body-parser": "^1.18.3",
     "connect-session-sequelize": "^6.0.0",
     "cookie-parser": "^1.4.3",
@@ -23,6 +24,7 @@
     "passport-oauth2": "^1.4.0",
     "passport-square": "^2.0.1",
     "pug": "^2.0.3",
+    "query-string": "^6.2.0",
     "querybuilder-helper": "0.0.2-beta",
     "reflect-metadata": "^0.1.12",
     "request": "^2.88.0",
@@ -46,6 +48,7 @@
     "@types/node": "^10.12.9",
     "@types/passport": "^0.4.7",
     "@types/passport-oauth2": "^1.4.7",
+    "@types/query-string": "^6.1.1",
     "@types/request": "^2.48.1",
     "@types/request-promise-native": "^1.0.15",
     "@types/serve-favicon": "^2.2.30",

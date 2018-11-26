@@ -16,7 +16,7 @@ import { AuthMiddleware, CookieMiddleware, SessionMiddleware, LoggingMiddleware,
 import { DatabaseManager } from './DatabaseManager';
 import { HttpManager } from './HttpManager';
 import { WebsocketManager } from './WebsocketManager';
-import { QueueController, QueueApiController, PageController, AuthController, WebhookController } from '../../controllers';
+import { ScreenViewController, ScreenController, QueueController, QueueApiController, ScreenApiController, PageController, AuthController, WebhookController } from '../../controllers';
 
 import { IConfig } from '../Config';
 import { QueueManager } from './QueueManager';
@@ -68,8 +68,11 @@ export class App {
 
         this.app.use('/', controllerToRouter(PageController));
         this.app.use('/auth', controllerToRouter(AuthController, auth, { successRedirect: '/', failureRedirect: '/' }));
+        this.app.use('/screen', controllerToRouter(ScreenViewController));
         this.app.use('/queues', controllerToRouter(QueueController));
+        this.app.use('/queues/:queueId/screens', controllerToRouter(ScreenController));
         this.app.use('/api/queues', controllerToRouter(QueueApiController));
+        this.app.use('/api/screens', controllerToRouter(ScreenApiController));
         this.app.use('/webhook', controllerToRouter(WebhookController, this.queueManager));
 
         this.app.use(HandleNotFound);

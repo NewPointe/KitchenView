@@ -62,31 +62,9 @@ html(lang="en")
 
         header
             nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
-                a.navbar-brand(href="/") 
-                    +fas.fa-fw.fa-utensils
-                    span.logo-text Kitchen View 2.0
-                button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation")
-                    span.navbar-toggler-icon
+                span.navbar-brand.logo-text.m-auto= Queue.name
 
-                .collapse.navbar-collapse#navbarContent
-
-                    span.navbar-brand.logo-text.m-auto= Queue.name
-
-                    ul.navbar-nav
-                        if CurrentUser
-                            li.nav-item.dropdown
-                                a.nav-link.dropdown-toggle(href="#" id="userMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false")
-                                    +fas.fa-lg.fa-user-circle
-                                    = CurrentUser.name
-                                .dropdown-menu.dropdown-menu-right(aria-labelledby="userMenu")
-                                
-
-                                    a.dropdown-item(href="/logout") Logout
-                        else
-                            li.nav-item
-                                a.nav-link(href="/login") Login
-
-        main.flex-grow#item-screen(data-queue-id=Queue.id)
+        main.flex-grow#item-screen(data-queue-id=Queue.id data-queue-key=ViewKey data-queue-secret=ViewSecret)
 
         footer.flex.flex-center.text-light.bg-dark.p-1
             div &copy; #{ (new Date()).getFullYear() } NewPointe Community Church

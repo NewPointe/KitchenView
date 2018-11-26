@@ -5,7 +5,7 @@
  */
 'use strict';
 
-import { randomBytes } from 'crypto';
+import { randomBytes, timingSafeEqual } from 'crypto';
 
 import { Request, Response, NextFunction } from 'express';
 import { json as buildJsonParser } from 'body-parser';
@@ -30,15 +30,19 @@ export function doGenerateCsrf(req: Request, res: Response, next: NextFunction) 
 }
 
 
-function getCsrfFrom(thing: any) {
+function getCsrfFrom(thing: any): string | null {
     return (thing && "csrfToken" in thing) ? thing.csrfToken : null;
 }
 
 
 export function doValidateCsrf(req: Request, res: Response, next: NextFunction) {
-    if(getCsrfFrom(req.session) === getCsrfFrom(req.body)) next()
+    const sessToken = getCsrfFrom(req.session);
+    const bodyToken = getCsrfFrom(req.body);
+    if(sessToken !== null && bodyToken !== null && timingSafeEqual(Buffer.from(sessToken, 'utf8'), Buffer.from(bodyToken, 'utf8'))) next()
     else throw new Error("Invalid CSRF Token");
 }
 
 
-export const doParseJson = buildJsonParser({ verify: (req, res, buf) => (req as any).rawBody = buf.toString() });
+export const doParseJson = buildJsonParser({ verify: (req, res, buf) => {
+    return (req as any).rawBody = buf.toString();
+} });

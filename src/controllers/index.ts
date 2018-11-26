@@ -10,3 +10,5 @@ export * from './AuthController';
 export * from './PageController';
 export * from './QueueController';
 export * from './WebbhookController';
+export * from './ScreenViewController';
+export * from './ScreenController';

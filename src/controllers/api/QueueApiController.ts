@@ -90,7 +90,7 @@ export class QueueApiController {
     }
 
     @Delete("/:id")
-    public getEdit(req: Request, res: Response, next: NextFunction) {
+    public deleteOne(req: Request, res: Response, next: NextFunction) {
 
         const queueId = +req.params["id"];
         getOneQueueForUserId(req.user.id, queueId).then(

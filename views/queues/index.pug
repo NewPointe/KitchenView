@@ -6,9 +6,9 @@ block content
         for queue in UserQueues
             .flex.border-top
                 div.flex-grow.flex.flex-center= queue.name
-                a.btn.btn-success.m-1(href=`/queues/${queue.id}`) View
+                a.btn.btn-success.m-1(href=`/queues/${queue.id}/screens`) Screen Keys
                 a.btn.btn-secondary.m-1(href=`/queues/${queue.id}/edit`) Edit
-                a.btn.btn-danger.js-button-delete.m-1(href="#" data-method="DELETE" data-action=`/api/queues/${queue.id}` data-name=queue.name) Delete
+                a.btn.btn-danger.js-button-delete.m-1(href="#" data-method="DELETE" data-action=`/api/queues/${queue.id}` data-typename="queue" data-name=queue.name) Delete
         .flex.flex-center.border-top
             a.btn.btn-success.m-1(href=`/queues/new`) Add Queue
 

@@ -9,6 +9,7 @@ import { Sequelize, Table, Column, Model, BelongsTo, AllowNull, ForeignKey, Belo
 import { Account } from './Account';
 import { QueueItem } from './QueueItem';
 import { Item } from './Item';
+import { Screen } from './Screen';
 
 /**
  * An queue.
@@ -45,6 +46,10 @@ export class Queue extends Model<Queue> {
     /** The Items this Queue has. */
     @BelongsToMany(() => Item, () => QueueItem)
     public items!: Item[];
+
+    /** The Screens. */
+    @HasMany(() => Screen)
+    public screens!: Screen[];
 
 
 }

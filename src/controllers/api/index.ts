@@ -6,3 +6,4 @@
 'use strict';
 
 export * from './QueueApiController';
+export * from './ScreenApiController';

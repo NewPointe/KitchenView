@@ -5,13 +5,17 @@
  */
 'use strict';
 
-import { Express, Request, Response, Router } from 'express';
+import { timingSafeEqual } from 'crypto';
 
+import { Express, Request, Response, Router,  } from 'express';
+import { parseUrl } from 'query-string';
 
 import { HttpManager } from './HttpManager';
 import { SessionMiddleware, AuthMiddleware } from './Middleware';
 import { WebsocketServer } from '../websocket/WebsocketServer';
 import { QueueManager } from './QueueManager';
+import { Queue } from '../../models/Queue';
+import { Screen } from '../../models/Screen';
 
 export class WebsocketManager {
 
@@ -34,10 +38,34 @@ export class WebsocketManager {
                 server: this.httpManager.http,
                 verifyClient: (info, done) => {
 
-                    const req = info.req as Request;
-                    const res = {} as Response;
+                    const urlOpts = parseUrl(info.req.url || "");
 
-                    this.authPipeline(req, res, () => done(!!req.user));
+                    if(urlOpts.query && "queueKey" in urlOpts.query && "queueSecret" in urlOpts.query) {
+                        const screenKey = urlOpts.query["queueKey"] as string;
+                        const screenSecret = urlOpts.query["queueSecret"] as string;
+
+                        Screen.findOne({
+                            where: {
+                                viewKey: screenKey
+                            },
+                            include: [Queue]
+                        }).then(
+                            screen => {
+                                if(screen) {
+                                    if(timingSafeEqual(Buffer.from(screen.viewSecret, 'utf8'), Buffer.from(screenSecret, 'utf8'))) {
+                                        (info.req as any).userId = screen.queue.accountId;
+                                        (info.req as any).queueId = screen.queue.id;
+                                        done(true);
+                                    }
+                                    else done(false);
+                                }
+                                else done(false);
+                            }
+                        ).catch(() => done(false));
+                    }
+                    else {
+                        done(false);
+                    }
 
                 }
             },

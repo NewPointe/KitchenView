@@ -6,15 +6,18 @@ function setUpSocket() {
     if (!itemScreen) return alert("Error setting up screen.");
 
     const queueId = itemScreen.dataset.queueId;
+    const queueKey = itemScreen.dataset.queueKey;
+    const queueSecret = itemScreen.dataset.queueSecret;
 
     // Map of recent item deletions, used to handle potential out-of-order notifications
     const itemDeletionLog = new Map();
 
-    const ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/");
+    const wsProtocol = location.protocol === "https:" ? "wss://" : "ws://";
+
+    const ws = new WebSocket(`${wsProtocol}${location.host}/?queueKey=${queueKey}&queueSecret=${queueSecret}`);
     ws.onopen = () => {
-        
         while(itemScreen.firstChild) itemScreen.removeChild(itemScreen.firstChild);
-        ws.send(JSON.stringify(["REGISTER", queueId]));
+        //ws.send(JSON.stringify(["REGISTER", queueId]));
     }
     ws.onmessage = (messageevent) => {
         const rawmessage = messageevent.data;
