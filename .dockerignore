@@ -1,0 +1,7 @@
+*
+!dist
+!public
+!views
+!.dockerignore
+!config.json
+!package.json

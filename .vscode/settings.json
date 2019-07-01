@@ -6,6 +6,7 @@
         "node_modules": true
     },
     "files.associations": {
-        "tslint*.json": "jsonc"
+        "tslint*.json": "jsonc",
+        "config*.json": "jsonc"
     }
 }
