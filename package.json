@@ -57,7 +57,8 @@
     "mocha": "^6.1.4",
     "ts-node": "^8.3.0",
     "tslint": "^5.18.0",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.2",
+    "typescript-tslint-plugin": "^0.5.3"
   },
   "optionalDependencies": {
     "mariadb": "^2.0.5",
