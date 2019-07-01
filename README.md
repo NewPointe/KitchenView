@@ -26,7 +26,7 @@ KitchenView is the kitchen display system we use in our cafes. We decided to wri
 Notable Improvements in v2:
 - Uses Square's Oauth APIs to enable anyone to sign up and use it.
 - Has an advanced filter editor to make it easy to decide what items to show on which screen.
-- Uses modern technologies like websockets to ensure screens always stay up to date.
+- Uses modern technologies to ensure screens always stay up to date.
 
 Pros:
 - Anything with a modern web browser can be used as a display.
@@ -36,7 +36,7 @@ Pros:
 
 Cons:
 - Currently a work-in-progress, so not a lot of extra features are available.
-- Both your Square device and the display need a reliable internet connection
+- Both your Square device and the display device need a reliable internet connection
 - Some orders can take up to a minute to show up - This is a limitation of Square's webhook API and there's nothing I can do about it.
 
 
@@ -58,9 +58,15 @@ In order to work, this app needs the following permissons from your Square accou
 ### App Setup
 
 1. Clone the repo locally.
-2. Copy `config.template.json` to `config.json` and fill it out.
-2. `npm i`
-3. `npm start`
+2. Install dependancies: `npm i --no-optional`
+3. Choose and install a database provider:
+   - MySQL: `npm i mysql2`
+   - SQLite: `npm i sqlite3`
+   - MariaDB: `npm i mariadb`
+   - PostgreSQL: `npm i pg pg-hstore`
+   - MSSQL: `npm i tedious`
+4. Copy `config.template.json` to `config.json` and fill it out.
+5. Start the app: `npm start`
 
 For a production environment you'll want a proxy like NGINX in front of the app so you can set up SSL, which is required for square webhooks. I also recommend using a deamon/management solution like [PM2](http://pm2.keymetrics.io/).
 

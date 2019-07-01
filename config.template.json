@@ -1,28 +1,62 @@
 {
     "web": {
+        
+        // The canonical domain for the app, used for webhook verification and oauth callbacks
         "domain": "kitchenview2.newpointe.org",
+
+        // The port to run on.
         "port": 3000,
-        "cookieSecret": "asdfg"
+        
+        // A random secret key to use for cookie/session encryption
+        "cookieSecret": "asdfg" 
+
     },
+
     "db": {
+        
+        // The database type. Can be "mysql", "sqlite", "postgres", or "mssql".
+        // You will also need to make sure the appropriate database drivers are installed: "npm i mysql2", "npm i sqlite3", "npm i pg", or "npm i tedious"
         "dialect": "mysql",
+        
         "host": "localhost",
+        
         "port": 3306,
+        
         "database": "kitchenview",
+        
         "username": "kitchenview",
-        "password": "asdfg"
+        
+        "password": "asdfg",
+        
+        // For sqlite, the file for the database.
+        "storage": "path/to/database.sqlite"
+
     },
+
     "oauth": {
+
+        // The Client Id for your app
+        "clientID": "asdfg",
+
+        // The Client Secret for your app
+        "clientSecret": "asdfg",
+
+        // The callback url. Should be https://yourdomain/auth/oauth2/callback.
+        "callbackURL":"http://localhost:3000/auth/oauth2/callback",
+
+        // Leave this stuff alone
         "authorizationURL": "https://connect.squareup.com/oauth2/authorize",
         "tokenURL": "https://connect.squareup.com/oauth2/token",
         "scope": "MERCHANT_PROFILE_READ,PAYMENTS_READ,ITEMS_READ",
         "scopeSeparator": ",",
         "grant_type": "authorization_code",
-        "clientID": "asdfg",
-        "clientSecret": "asdfg",
-        "callbackURL":"http://localhost:3000/auth/oauth2/callback"
+
     },
+
     "webhook": {
+
+        // The signature key for webhooks
         "signatureKey": "asdfg"
+
     }
 }
