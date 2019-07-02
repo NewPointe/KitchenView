@@ -12,7 +12,7 @@
         "only-arrow-functions": [true, "allow-declarations", "allow-named-functions"], // Disallows traditional (non-arrow) function expressions.
         "prefer-for-of": true, // Recommends a ‘for-of’ loop over a standard ‘for’ loop if the index is only used to access the array being iterated.
         "promise-function-async": true, // Requires any function or method that returns a promise to be marked async.
-        "await-promise": [true, "Bluebird"], // Warns for an awaited value that is not a Promise.
+        "await-promise": [true, "Bluebird", "PromiseLike"], // Warns for an awaited value that is not a Promise.
         "ban-comma-operator": true, // Disallows the comma operator to be used.
         "curly": [true, "ignore-same-line"], // Enforces braces for if/for/do/while statements.
         "forin": true, // Requires a for ... in statement to be filtered with an if statement.

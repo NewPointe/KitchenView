@@ -9,9 +9,14 @@ import httpError from 'http-errors';
 import { Request, Response, NextFunction } from 'express';
 
 export function LoadCommonMergeFields(req: Request, res: Response, next: NextFunction) {
-    res.locals.CurrentUser = req.user;
-    res.locals.Session = req.session;
+
+    const locals = res.locals as { [key: string]: any };
+
+    locals.CurrentUser = req.user;
+    locals.Session = req.session;
+
     next();
+
 }
 
 export function HandleNotFound(req: Request, res: Response, next: NextFunction) {

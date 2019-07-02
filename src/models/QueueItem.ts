@@ -12,10 +12,10 @@ import { Item } from './Item';
 /**
  * A queue.
  */
-@Table({
-    timestamps: true
-})
+@Table
 export class QueueItem extends Model<QueueItem> {
+
+    id!: number;
 
     /** The Queue Id. */
     @ForeignKey(() => Queue)
@@ -37,7 +37,7 @@ export class QueueItem extends Model<QueueItem> {
 
     /** The Date/Time the Item was cleared from the Queue. */
     @Column
-    public clearedAt!: Date
+    public clearedAt!: Date;
 
 
 }

@@ -28,11 +28,10 @@ async function registerAllLocations(accessToken: string) {
 /**
  * Verifies and returns a User.
  */
-export function verifyUser(accessToken: string, refreshToken: string, profile: Profile, onDone: VerifyDone) {
-    const merchant = (profile as any)._squareProfile as Merchant;
+export function verifyUser(accessToken: string, refreshToken: string, profile: Merchant, onDone: VerifyDone) {
     promise2Callback<Account>(
-        getNewOrUpdatedAccount(accessToken, merchant).then(
-            acct => registerAllLocations(accessToken).then(() => acct)
+        getNewOrUpdatedAccount(accessToken, refreshToken, profile).then(
+            async (acct: Account) => registerAllLocations(accessToken).then(() => acct)
         ),
         onDone
     );
@@ -44,7 +43,7 @@ export function verifyUser(accessToken: string, refreshToken: string, profile: P
  * @param onDone A function to call once the user is serialized.
  */
 export function serializeUser(user: Account, onDone: SerializeDone) {
-    onDone(null, user.id as number);
+    onDone(null, user.id);
 }
 
 /**
@@ -54,7 +53,7 @@ export function serializeUser(user: Account, onDone: SerializeDone) {
  */
 export function deserializeUser(id: number, onDone: DeserializeDone) {
     promise2Callback<Account>(
-        Account.findById(id, { rejectOnEmpty: true }),
+        Account.findByPk(id, { rejectOnEmpty: true }),
         onDone
-    ).catch();
+    );
 }

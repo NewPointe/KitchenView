@@ -10,7 +10,7 @@ block content
             h2 Welcome #{CurrentUser.name}!
             if !UserQueues || UserQueues.length === 0
                 p You don't have any queues set up yet. Click the button below to get started.
-                a.btn.btn-lg.btn-success(href="/queues/new") Add Queue
+                a.btn.btn-lg.btn-success(href="/queues/new") Create a New Queue
             else
                 p You have #{UserQueues.length} queues. Click the button below to manage them.
                 a.btn.btn-lg.btn-success(href="/queues") Manage My Queues

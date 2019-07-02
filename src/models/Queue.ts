@@ -5,7 +5,8 @@
  */
 'use strict';
 
-import { Sequelize, Table, Column, Model, BelongsTo, AllowNull, ForeignKey, BelongsToMany, HasMany } from 'sequelize-typescript';
+import { STRING } from 'sequelize';
+import { Table, Column, Model, BelongsTo, AllowNull, ForeignKey, BelongsToMany, HasMany } from 'sequelize-typescript';
 import { Account } from './Account';
 import { QueueItem } from './QueueItem';
 import { Item } from './Item';
@@ -14,21 +15,21 @@ import { Screen } from './Screen';
 /**
  * An queue.
  */
-@Table({
-    timestamps: true
-})
+@Table
 export class Queue extends Model<Queue> {
+
+    id!: number;
 
     /** The Queue Name */
     @AllowNull(false)
-    @Column(Sequelize.STRING(255))
+    @Column(STRING(255))
     public name!: string;
 
     /** The Filter */
     @AllowNull(true)
-    @Column(Sequelize.STRING(2048))
+    @Column(STRING(2048))
     public filter!: string;
-    
+
     /** The Account Id */
     @AllowNull(false)
     @ForeignKey(() => Account)

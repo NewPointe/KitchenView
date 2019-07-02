@@ -5,13 +5,13 @@
  */
 'use strict';
 
-import { getMetadata } from "../ControllerMetadata";
+import { getMetadata, IHasMetadata } from "../ControllerMetadata";
 import { IMiddlewareable } from "../Middleware";
 import { RouteMetadata } from "../RouteMetadata";
 
 function buildDecorator(method: string, route: string, beforeMiddleware?: IMiddlewareable[], afterMiddleware?: IMiddlewareable[]) {
     return (target: any, key: string, descriptor: any) => {
-        const metadata = getMetadata(target);
+        const metadata = getMetadata(target as IHasMetadata);
         metadata.addRoute(key, new RouteMetadata(method, route, beforeMiddleware, afterMiddleware));
         return descriptor;
     };

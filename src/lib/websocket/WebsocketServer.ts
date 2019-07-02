@@ -16,15 +16,15 @@ import { Queue } from '../../models/Queue';
 import { Item } from '../../models/Item';
 
 export class WebsocketServer {
-    
+
     private server: Server;
-    public readonly queueManager: QueueManager
+    public readonly queueManager: QueueManager;
     private clients: Set<ServerClient> = new Set<ServerClient>();
 
     constructor(options: ServerOptions, queueManager: QueueManager) {
         this.server = new Server(options);
-        this.queueManager = queueManager
-        
+        this.queueManager = queueManager;
+
         this.server.on('connection', this.OnConnection.bind(this));
         this.server.on('close', this.OnClose.bind(this));
         this.server.on('error', this.OnError.bind(this));
@@ -35,7 +35,7 @@ export class WebsocketServer {
         this.queueManager.on('removeItem', this.OnQueueItemRemove.bind(this));
 
     }
-    
+
     private OnConnection(socket: WebSocket, request: IncomingMessage) {
         const client = new ServerClient(socket, request, this);
         this.clients.add(client);

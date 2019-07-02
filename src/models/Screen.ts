@@ -5,16 +5,17 @@
  */
 'use strict';
 
-import { Sequelize, Table, Column, Model, BelongsTo, ForeignKey, NotEmpty, NotNull, Unique } from 'sequelize-typescript';
+import { STRING } from 'sequelize';
+import { Table, Column, Model, BelongsTo, ForeignKey, NotEmpty, NotNull, Unique } from 'sequelize-typescript';
 import { Queue } from './Queue';
 
 /**
  * A queue.
  */
-@Table({
-    timestamps: true
-})
+@Table
 export class Screen extends Model<Screen> {
+
+    id!: number;
 
     /** The Queue Id. */
     @ForeignKey(() => Queue)
@@ -30,14 +31,14 @@ export class Screen extends Model<Screen> {
     @NotEmpty
     @NotNull
     @Unique
-    @Column(Sequelize.STRING(255))
+    @Column(STRING(255))
     public viewKey!: string;
 
     /** The access secret for this queue. */
     @Column
     @NotEmpty
     @NotNull
-    @Column(Sequelize.STRING(255))
+    @Column(STRING(255))
     public viewSecret!: string;
 
 

@@ -41,7 +41,4 @@ export class Message {
         }
     }
 
-    static fromRawMessage() {
-        
-    }
 }

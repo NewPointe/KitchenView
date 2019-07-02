@@ -6,9 +6,8 @@
 'use strict';
 
 export * from './api';
-export * from './AuthController';
 export * from './PageController';
 export * from './QueueController';
-export * from './WebbhookController';
+export * from './WebhookController';
 export * from './ScreenViewController';
 export * from './ScreenController';

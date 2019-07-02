@@ -8,45 +8,30 @@
 import { RequestHandler } from 'express';
 import { Authenticator } from 'passport';
 
-import { IOauthConfig, OAuthManager } from '../OAuthManager';
 import { serializeUser, deserializeUser, verifyUser } from '../../PassportAuth';
+import { SquareOAuthStrategy, SquareOAuthStrategyOptions } from '../../SquareOAuthStrategy';
+import { Middleware } from './Middleware';
 
-export class AuthMiddleware {
+export class AuthMiddleware extends Middleware {
 
-    private _process: RequestHandler;
-    public get process() {
-        return this._process;
-    }
+    public readonly processSession: RequestHandler;
+    public readonly processSquare: RequestHandler;
+    public readonly processSquareCallback: RequestHandler;
 
-    private oauthManager: OAuthManager;
-    private authenticator: Authenticator;
+    constructor(squareOAuthOptions: SquareOAuthStrategyOptions) {
 
-    constructor(providers: IOauthConfig[]) {
-        this.oauthManager = new OAuthManager();
-        this.oauthManager.loadAll(providers);
+        const authenticator = new Authenticator() as unknown as Authenticator<RequestHandler, RequestHandler>;
 
-        this.authenticator = new Authenticator() as object as Authenticator;
-        this.authenticator.serializeUser(serializeUser);
-        this.authenticator.deserializeUser(deserializeUser);
+        authenticator.serializeUser(serializeUser);
+        authenticator.deserializeUser(deserializeUser);
 
-        this.oauthManager.getProviders().forEach(p => this.authenticator.use(p.buildStrategy("", verifyUser)));
+        authenticator.use(new SquareOAuthStrategy(squareOAuthOptions, verifyUser));
 
-        this._process = this.authenticator.initialize();
-    }
-    
+        super(authenticator.initialize());
+        this.processSession = authenticator.session();
+        this.processSquare = authenticator.authenticate('square');
+        this.processSquareCallback = authenticator.authenticate('square', { successRedirect: '/', failureRedirect: '/' });
 
-    public getSessionAuthenticator() {
-        return this.authenticator.session();
-    }
-
-    public getAuthenticatorFor(provider: string) {
-        if(!this.oauthManager.hasProvider(provider)) return null;
-        else return this.authenticator.authenticate(provider);
-    }
-
-    public getAuthenticatorCallbackFor(provider: string, callbackOptions: any) {
-        if(!this.oauthManager.hasProvider(provider)) return null;
-        else return this.authenticator.authenticate(provider, callbackOptions);
     }
 
 }

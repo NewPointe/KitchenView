@@ -12,12 +12,12 @@ export function UseBefore(beforeMiddleware: IMiddlewareable) {
     return (target: any, key?: string) => {
 
         if(key) { // Used on a member
-            const metadata = getMetadata(target);
+            const metadata = getMetadata(target); // tslint:disable-line:no-unsafe-any
             const handler = metadata.getOrCreateRouteHandler(key);
             handler.beforeMiddleware.unshift(beforeMiddleware);
         }
         else { // Used on a class
-            const metadata = getMetadata(target.prototype);
+            const metadata = getMetadata(target.prototype); // tslint:disable-line:no-unsafe-any
             metadata.beforeMiddleware.unshift(beforeMiddleware);
         }
 

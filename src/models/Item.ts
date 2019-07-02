@@ -5,46 +5,47 @@
  */
 'use strict';
 
-import { Sequelize, Table, Column, Model, AllowNull, HasMany, BelongsToMany } from 'sequelize-typescript';
+import { STRING, INTEGER, TEXT } from 'sequelize';
+import { Table, Column, Model, AllowNull, HasMany, BelongsToMany } from 'sequelize-typescript';
 import { Queue } from './Queue';
 import { QueueItem } from './QueueItem';
 
 /**
  * An item.
  */
-@Table({
-    timestamps: true
-})
+@Table
 export class Item extends Model<Item> {
+
+    id!: number;
 
     /** The Item Name */
     @AllowNull(false)
-    @Column(Sequelize.STRING(255))
+    @Column(STRING(255))
     public name!: string;
 
     /** The Item Variation */
     @AllowNull(true)
-    @Column(Sequelize.STRING(255))
+    @Column(STRING(255))
     public variation!: string;
 
     /** The Item Category */
     @AllowNull(true)
-    @Column(Sequelize.STRING(255))
+    @Column(STRING(255))
     public category!: string;
 
     /** The Item Quantity */
     @AllowNull(false)
-    @Column(Sequelize.INTEGER)
+    @Column(INTEGER)
     public quantity!: number;
 
     /** The Item Note */
     @AllowNull(true)
-    @Column(Sequelize.TEXT)
+    @Column(TEXT)
     public notes!: string;
 
     /** The Item Modifiers */
     @AllowNull(true)
-    @Column(Sequelize.TEXT)
+    @Column(TEXT)
     public modifiers!: string;
 
     /** The QueuesItems. */
@@ -56,7 +57,7 @@ export class Item extends Model<Item> {
     public queues!: Queue[];
 
     /** The payment the item is from. */
-    @Column(Sequelize.STRING(255))
+    @Column(STRING(255))
     public paymentId!: string;
 
 }

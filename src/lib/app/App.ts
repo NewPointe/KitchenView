@@ -7,20 +7,27 @@
 
 import { join as joinPath } from 'path';
 
-import express from 'express';
+import express, { RequestHandler, Request as RequestBase } from 'express';
 
 import { controllerToRouter } from '../cp3-express-decorators/AppBuilder';
-
 
 import { AuthMiddleware, CookieMiddleware, SessionMiddleware, LoggingMiddleware, LoadCommonMergeFields, HandleNotFound, HandleErrors } from './Middleware';
 import { DatabaseManager } from './DatabaseManager';
 import { HttpManager } from './HttpManager';
 import { WebsocketManager } from './WebsocketManager';
-import { ScreenViewController, ScreenController, QueueController, QueueApiController, ScreenApiController, PageController, AuthController, WebhookController } from '../../controllers';
+import { ScreenViewController, ScreenController, QueueController, QueueApiController, ScreenApiController, PageController, WebhookController } from '../../controllers';
 
 import { IConfig } from '../Config';
 import { QueueManager } from './QueueManager';
+import { Middleware } from './Middleware/Middleware';
+import { Account } from '../../models/Account';
 
+export interface Request<TParams = any, TQuery = any, TBody = any> extends RequestBase {
+    user: Account;
+    params: Partial<TParams>;
+    query: Partial<TQuery>;
+    body: Partial<TBody>;
+}
 
 // Common dirs
 
@@ -38,36 +45,50 @@ export class App {
     public readonly websocketManager: WebsocketManager;
     private queueManager: QueueManager;
 
-    constructor(appConfig: IConfig) {
+    constructor(config: IConfig) {
 
-        this.dbManager = new DatabaseManager(modelsRoot, appConfig.db);
+        // Setup database
+        this.dbManager = new DatabaseManager(modelsRoot, config.get('db'));
+
+        // Setup queue management
         this.queueManager = new QueueManager();
 
+        // Setup express app
         this.app = express();
 
+        // Set proxy trust
         this.app.set('trust proxy', 1);
+
+        // Setup view engine
         this.app.set('views', viewsRoot);
         this.app.set('view engine', 'pug');
 
-        const logging = new LoggingMiddleware();
-        const cookie = new CookieMiddleware(appConfig.web.cookieSecret);
-        const session = new SessionMiddleware(appConfig.web.cookieSecret, this.dbManager);
-        const auth = new AuthMiddleware([{
-            id: "square",
-            module: "passport-square",
-            options: appConfig.oauth
-        }]);
+        // Setup request logging
+        this.use(new LoggingMiddleware());
 
-        this.app.use(logging.process);
-        this.app.use(cookie.process);
-        this.app.use(session.process);
-        this.app.use(auth.process);
-        this.app.use(auth.getSessionAuthenticator());
+        // Setup static files
         this.app.use(express.static(publicRoot));
+
+        // Setup cookies & session
+        this.use(new CookieMiddleware(config.get('cookieSecret')));
+        const session = new SessionMiddleware(config.get('cookieSecret'), this.dbManager);
+        this.use(session);
+
+        // Setup Square auth
+        const auth = new AuthMiddleware({
+            scope: "MERCHANT_PROFILE_READ,PAYMENTS_READ,ITEMS_READ",
+            ...config.get('square')
+        });
+        this.app.use(auth.process);
+        this.app.use(auth.processSession);
+        this.app.use('/auth/square', auth.processSquare);
+        this.app.use('/auth/square/callback', auth.processSquareCallback);
+
+        // Setup view locals
         this.app.use(LoadCommonMergeFields);
 
+        // Setup view controllers
         this.app.use('/', controllerToRouter(PageController));
-        this.app.use('/auth', controllerToRouter(AuthController, auth, { successRedirect: '/', failureRedirect: '/' }));
         this.app.use('/screen', controllerToRouter(ScreenViewController));
         this.app.use('/queues', controllerToRouter(QueueController));
         this.app.use('/queues/:queueId/screens', controllerToRouter(ScreenController));
@@ -75,13 +96,21 @@ export class App {
         this.app.use('/api/screens', controllerToRouter(ScreenApiController));
         this.app.use('/webhook', controllerToRouter(WebhookController, this.queueManager));
 
+        // Setup 404 & error handling
         this.app.use(HandleNotFound);
         this.app.use(HandleErrors);
-        
-        this.httpManager = new HttpManager(this.app, appConfig.web);
-        
+
+        // Setup http server
+        this.httpManager = new HttpManager(this.app, config.get('port'));
+
+        // Setup websocket server
         this.websocketManager = new WebsocketManager(this.httpManager, session, auth, this.queueManager);
 
+    }
+
+    public use(thing: Middleware | RequestHandler) {
+        if(thing instanceof Middleware) this.app.use(thing.process);
+        else this.app.use(thing);
     }
 
 }

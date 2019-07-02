@@ -63,9 +63,10 @@ export class WebhookController {
                                         item: itemization,
                                         payment: payment,
                                         notification: body
-                                    })
+                                    }).then(() => { /* noop */ }, () => { /* noop */ });
                                 }
-                            }
+                            },
+                            () => { /* noop */ }
                         );
                     }
                 }

@@ -15,16 +15,16 @@ export class HttpManager {
     private app: Express;
     public readonly http: Server;
 
-    constructor(app: Express, httpConfig: any) {
+    constructor(app: Express, port: number) {
 
         this.app = app;
-        
-        this.app.set('port', httpConfig.port);
-        
-        const debugWeb = debugBuilder('web')
-        
+
+        this.app.set('port', port);
+
+        const debugWeb = debugBuilder('web');
+
         this.http = createServer(app)
-            .listen(httpConfig.port)
+            .listen(port)
             .on('error', (error: NodeJS.ErrnoException) => {
                 if (error.syscall !== 'listen') {
                     throw error;
@@ -33,11 +33,11 @@ export class HttpManager {
                 // handle specific listen errors with friendly messages
                 switch (error.code) {
                     case 'EACCES':
-                        console.error(`Port ${httpConfig.port} requires elevated privileges`);
+                        console.error(`Port ${port} requires elevated privileges`);
                         process.exit(1);
                         break;
                     case 'EADDRINUSE':
-                        console.error(`Port ${httpConfig.port} is already in use`);
+                        console.error(`Port ${port} is already in use`);
                         process.exit(1);
                         break;
                     default:
@@ -45,7 +45,7 @@ export class HttpManager {
                 }
             })
             .on('listening', () => {
-                debugWeb(`Listening on ${httpConfig.port}`);
+                debugWeb(`Listening on ${port}`);
             });
     }
 

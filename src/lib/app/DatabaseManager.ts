@@ -5,25 +5,23 @@
  */
 'use strict';
 
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
+import { Sequelize as SequelizeBase } from 'sequelize';
 import debugBuilder from 'debug';
-
-(Sequelize.Promise as {}) = global.Promise;
 
 export class DatabaseManager {
 
-    public readonly sequelize: Sequelize;
+    public readonly sequelize: SequelizeBase;
 
-    constructor(modelsRoot: string, options: any) {
-        
+    constructor(modelsRoot: string, options: Partial<SequelizeOptions>) {
+
         const debugDb = debugBuilder('db');
-        
+
         this.sequelize = new Sequelize({
             logging: debugDb,
             modelPaths: [modelsRoot],
-            operatorsAliases: false,
             ...options
-        });
+        }) as any as SequelizeBase;
 
         this.sequelize.sync();
 

@@ -5,18 +5,16 @@
  */
 'use strict';
 
-import { RequestHandler } from 'express';
 import processCookies from 'cookie-parser';
 
-export class CookieMiddleware {
+import { Middleware } from './Middleware';
 
-    private _process: RequestHandler;
-    public get process() {
-        return this._process;
-    }
+export class CookieMiddleware extends Middleware {
 
     constructor(cookieSecret: string) {
-        this._process = processCookies(cookieSecret);
+
+        super(processCookies(cookieSecret));
+
     }
 
 }

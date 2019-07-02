@@ -7,7 +7,7 @@
 
 import { timingSafeEqual } from 'crypto';
 
-import { Express, Request, Response, Router,  } from 'express';
+import { Router } from 'express';
 import { parseUrl } from 'query-string';
 
 import { HttpManager } from './HttpManager';
@@ -31,7 +31,7 @@ export class WebsocketManager {
         this.authPipeline = Router();
         this.authPipeline.use(sessionMiddleware.process);
         this.authPipeline.use(authMiddleware.process);
-        this.authPipeline.use(authMiddleware.getSessionAuthenticator());
+        this.authPipeline.use(authMiddleware.processSession);
 
         this.server = new WebsocketServer(
             {

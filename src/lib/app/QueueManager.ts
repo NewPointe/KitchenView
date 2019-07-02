@@ -37,7 +37,7 @@ export class QueueManager extends EventEmitter {
     }
 
     public static async saveItemization(payment: Payment, item: PaymentItemization) {
-        return await Item.create({
+        return Item.create({
             name: item.name,
             quantity: +item.quantity,
             category: item.item_detail.category_name || "",
@@ -78,7 +78,7 @@ export class QueueManager extends EventEmitter {
             const item = await QueueManager.saveItemization(purchasedItem.payment, purchasedItem.item);
 
             // Add it to the right queues
-            matchingQueues.forEach(queue => this.addItemToQueue(item, queue));
+            for(const queue of matchingQueues) await this.addItemToQueue(item, queue);
 
         }
     }

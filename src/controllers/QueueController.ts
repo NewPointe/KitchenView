@@ -5,10 +5,11 @@
  */
 'use strict';
 
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { Controller, Get, RequireUser, GenerateCsrf } from '../lib/cp3-express-decorators';
 
 import { getClientFilterOptions, getAllQueuesForUserId, getOneQueueForUserId } from '../lib/Util';
+import { Request } from '../lib/app/App';
 
 @Controller()
 @RequireUser()
@@ -19,7 +20,7 @@ export class QueueController {
 
         getAllQueuesForUserId(req.user.id).then(
             UserQueues => res.render('queues', { UserQueues })
-        );
+        ).catch(next);
 
     }
 
@@ -28,18 +29,18 @@ export class QueueController {
     public getNew(req: Request, res: Response, next: NextFunction) {
 
         res.render('queues/edit', { FilterOptions: getClientFilterOptions() });
-        
+
     }
 
     @Get("/:id/edit")
     @GenerateCsrf()
-    public getEdit(req: Request, res: Response, next: NextFunction) {
+    public getEdit(req: Request<{ id: string }>, res: Response, next: NextFunction) {
 
-        const queueId = +req.params["id"];
+        const queueId = +(req.params["id"] || 0);
         getOneQueueForUserId(req.user.id, queueId).then(
             Queue => res.render('queues/edit', { Queue, FilterOptions: getClientFilterOptions() })
-        );
-        
+        ).catch(next);
+
     }
 
 }

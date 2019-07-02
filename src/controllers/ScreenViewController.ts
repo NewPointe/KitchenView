@@ -8,21 +8,21 @@
 import { timingSafeEqual } from 'crypto';
 
 import httpError from 'http-errors';
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { Controller, Get } from '../lib/cp3-express-decorators';
 
-import { getOneQueueForUserId } from '../lib/Util';
 import { Screen } from '../models/Screen';
 import { Queue } from '../models/Queue';
+import { Request } from '../lib/app/App';
 
 @Controller()
 export class ScreenViewController {
 
     @Get("/:key/:secret")
-    public getOne(req: Request, res: Response, next: NextFunction) {
+    public getOne(req: Request<{ key: string, secret: string }>, res: Response, next: NextFunction) {
 
-        const screenKey = req.params["key"];
-        const screenSecret = req.params["secret"];
+        const screenKey = req.params["key"] || "";
+        const screenSecret = req.params["secret"] || "";
 
         Screen.findOne({
             where: {
@@ -39,8 +39,8 @@ export class ScreenViewController {
                 }
                 else next(new httpError.NotFound());
             }
-        ).catch(next)
-        
+        ).catch(next);
+
     }
 
 }

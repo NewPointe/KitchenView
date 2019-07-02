@@ -7,6 +7,6 @@
 'use strict';
 
 import { App } from './lib/app/App';
-import { getConfig } from './lib/Config';
+import { Config } from './lib/Config';
 
-new App(getConfig());
+const app = new App(Config);

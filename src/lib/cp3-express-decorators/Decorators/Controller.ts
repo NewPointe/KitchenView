@@ -5,12 +5,12 @@
  */
 'use strict';
 
-import { getMetadata } from "../ControllerMetadata";
+import { getMetadata, IHasMetadata } from "../ControllerMetadata";
 import { IMiddlewareable } from "../Middleware";
 
 export function Controller(path?: string, beforeMiddleware?: IMiddlewareable[], afterMiddleware?: IMiddlewareable[]) {
     return (target: any) => {
-        const metadata = getMetadata(target.prototype);
+        const metadata = getMetadata(target.prototype); // tslint:disable-line:no-unsafe-any
         if(path) metadata.path = path;
         if(beforeMiddleware) metadata.beforeMiddleware = beforeMiddleware;
         if(afterMiddleware) metadata.afterMiddleware = afterMiddleware;

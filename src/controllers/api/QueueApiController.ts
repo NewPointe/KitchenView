@@ -5,11 +5,12 @@
  */
 'use strict';
 
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { Controller, Get, Post, Delete, RequireUser, ValidateCsrf, ParseJson } from '../../lib/cp3-express-decorators';
 
 import { getAllQueuesForUserId, getOneQueueForUserId } from '../../lib/Util';
 import { Queue } from '../../models/Queue';
+import { Request } from '../../lib/app/App';
 
 interface IQueue {
     crfToken?: string;
@@ -18,14 +19,16 @@ interface IQueue {
     filter: string;
 }
 
+// tslint:disable:no-unsafe-any
 function checkQueue(queue: any): queue is IQueue {
     return (!("id" in queue) || typeof queue.name === 'number' || typeof queue.name === 'string')
         && "name" in queue && typeof queue.name === 'string'
         && "filter" in queue && typeof queue.filter === 'string';
 }
+// tslint:enable
 
 function queueToJson(queue: Queue) {
-    return { id: queue.id, name: queue.name, filter: queue.filter }
+    return { id: queue.id, name: queue.name, filter: queue.filter };
 }
 
 @Controller()
@@ -37,6 +40,8 @@ export class QueueApiController {
 
         getAllQueuesForUserId(req.user.id).then(
             queues => res.json(queues.map(queueToJson))
+        ).catch(
+            (err: Error) => res.status(500).json({ message: err.message })
         );
 
     }
@@ -45,7 +50,7 @@ export class QueueApiController {
     @Post("/:id")
     @ParseJson()
     @ValidateCsrf()
-    public createOrEdit(req: Request, res: Response, next: NextFunction) {
+    public createOrEdit(req: Request<{ id: string }, never, Queue>, res: Response, next: NextFunction) {
 
         const newQueue = req.body;
         if (!checkQueue(newQueue)) res.status(400).json({ message: "Queue must have a 'name' and 'filter'." });
@@ -54,13 +59,15 @@ export class QueueApiController {
         if(typeof queueId !== 'undefined' ) {
             getOneQueueForUserId(req.user.id, +queueId).then(
                 queue => {
-                    if (queue) queue.update({ name: newQueue.name, filter: newQueue.filter }).then(
-                        () => res.status(204).send(),
-                        err => res.status(500).json({ message: err.message })
-                    )
-                    else res.status(404).json({ message: "That Queue does not exist." })
+                    if (queue) {
+                        queue.update({ name: newQueue.name, filter: newQueue.filter }).then(
+                            () => res.status(204).send(),
+                            (err: Error) => res.status(500).json({ message: err.message })
+                        );
+                    }
+                    else res.status(404).json({ message: "That Queue does not exist." });
                 },
-                err => res.status(500).json({ message: err.message })
+                (err: Error) => res.status(500).json({ message: err.message })
             );
         }
         else {
@@ -70,39 +77,45 @@ export class QueueApiController {
                 accountId: req.user.id
             }).then(
                 queue => res.status(200).json(queueToJson(queue)),
-                err => res.status(500).json({ message: err.message })
+                (err: Error) => res.status(500).json({ message: err.message })
             );
         }
-        
+
     }
 
     @Get("/:id")
-    public getOne(req: Request, res: Response, next: NextFunction) {
+    public getOne(req: Request<{ id: string }>, res: Response, next: NextFunction) {
 
-        const queueId = +req.params["id"];
+        const queueId = +(req.params["id"] || 0);
         getOneQueueForUserId(req.user.id, queueId).then(
             queue => {
-                if (queue) res.status(200).json({ id: queue.id, name: queue.name, filter: queue.filter })
-                else res.status(404).json({ message: "That Queue does not exist." })
+                if (queue) res.status(200).json({ id: queue.id, name: queue.name, filter: queue.filter });
+                else res.status(404).json({ message: "That Queue does not exist." });
             }
+        ).catch(
+            (err: Error) => res.status(500).json({ message: err.message })
         );
-        
+
     }
 
     @Delete("/:id")
-    public deleteOne(req: Request, res: Response, next: NextFunction) {
+    public deleteOne(req: Request<{ id: string }>, res: Response, next: NextFunction) {
 
-        const queueId = +req.params["id"];
+        const queueId = +(req.params["id"] || 0);
         getOneQueueForUserId(req.user.id, queueId).then(
             queue => {
-                if (queue) queue.destroy().then(
-                    () => res.status(204).send(),
-                    err => res.status(500).json({ message: err.message })
-                );
-                else res.status(404).json({ message: "That Queue does not exist." })
+                if (queue) {
+                    queue.destroy().then(
+                        () => res.status(204).send(),
+                        (err: Error) => res.status(500).json({ message: err.message })
+                    );
+                }
+                else res.status(404).json({ message: "That Queue does not exist." });
             }
+        ).catch(
+            (err: Error) => res.status(500).json({ message: err.message })
         );
-        
+
     }
 
 }

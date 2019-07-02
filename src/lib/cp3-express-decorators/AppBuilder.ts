@@ -5,23 +5,23 @@
  */
 'use strict';
 
-import { getMetadata } from './ControllerMetadata';
-import { Router, IRouterMatcher } from 'express';
+import { getMetadata, IHasMetadata } from './ControllerMetadata';
+import { Router, IRouterMatcher, RequestHandler } from 'express';
 
-export function controllerToRouter(ControllerType: any, ...args: any[]) {
-    const controller = new ControllerType(...args);
-    const metadata = getMetadata(ControllerType.prototype);
+export function controllerToRouter<TArgs extends Array<unknown>>(ControllerType: new(...args: TArgs ) => any, ...args: TArgs) {
+    const controller = new ControllerType(...args) as { [key: string]: RequestHandler };
+    const metadata = getMetadata(ControllerType.prototype as IHasMetadata);
 
     const router = Router({ mergeParams: true });
-    
+
     metadata.beforeMiddleware.forEach(m => router.use(m));
     metadata.getHandlers().forEach(rh => {
         const handler = controller[rh.functionKey].bind(controller);
         rh.routes.forEach(r => {
             const routerMethod = (router as any)[r.method] as IRouterMatcher<Router>;
-            routerMethod.call(router, r.path, ...rh.beforeMiddleware, ...r.beforeMiddleware, handler, ...r.afterMiddleware, ...rh.afterMiddleware);
+            routerMethod.call<Router, [string, RequestHandler[]], Router>(router, r.path, [...rh.beforeMiddleware, ...r.beforeMiddleware, handler, ...r.afterMiddleware, ...rh.afterMiddleware]);
         });
-    })
+    });
     metadata.afterMiddleware.forEach(m => router.use(m));
 
     return router;

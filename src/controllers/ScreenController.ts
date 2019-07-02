@@ -6,11 +6,12 @@
 'use strict';
 
 import httpError from 'http-errors';
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { Controller, Get, RequireUser, GenerateCsrf } from '../lib/cp3-express-decorators';
 
 import { Queue } from '../models/Queue';
 import { Screen } from '../models/Screen';
+import { Request } from '../lib/app/App';
 
 @Controller()
 @RequireUser()
@@ -18,9 +19,9 @@ export class ScreenController {
 
     @Get("/")
     @GenerateCsrf()
-    public getOne(req: Request, res: Response, next: NextFunction) {
+    public getOne(req: Request<{ queueId: string }, { queueId: string }>, res: Response, next: NextFunction) {
 
-        const queueId = +req.params["queueId"] || +req.query["queueId"];
+        const queueId = +(req.params["queueId"] || 0) || +(req.query["queueId"] || 0);
         Queue.findOne({
             where: {
                 id: queueId,
@@ -29,11 +30,11 @@ export class ScreenController {
             include: [Screen]
         }).then(
             queue => {
-                if(queue != null) res.render('screens/index', { Queue: queue })
-                else next(new httpError.NotFound())
+                if(queue !== null) res.render('screens/index', { Queue: queue });
+                else next(new httpError.NotFound());
             }
         ).catch(next);
-        
+
     }
 
 }

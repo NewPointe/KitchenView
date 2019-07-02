@@ -54,7 +54,7 @@ export class ServerClient {
 
         this.authorizedUserId = (request as any).userId;
         this.authorizedQueueId = (request as any).queueId;
-        
+
         Queue.findOne({
             where: { id: this.authorizedQueueId },
             include: [{
@@ -63,12 +63,13 @@ export class ServerClient {
             }]
         }).then(
             queue => {
-                if (queue)
+                if (queue) {
                     for (const queueItem of queue.queueItems) {
                         this.OnQueueItemAdded(queueItem.item, queue);
                     }
+                }
             },
-            () => { }
+            () => { /* */ }
         );
 
         this.startKeepalive();
@@ -106,7 +107,7 @@ export class ServerClient {
     }
 
     private stopKeepalive() {
-        this.keepaliveId && clearInterval(this.keepaliveId);
+        if(this.keepaliveId) clearInterval(this.keepaliveId);
         this.keepaliveId = null;
     }
 
@@ -161,11 +162,11 @@ export class ServerClient {
 
     private OnMessage_RemoveQueueItem(itemId: number, queueId: number) {
         getOneQueueForUserId(this.authorizedUserId, queueId).then(
-            queue => {
-                if (queue) this.server.queueManager.removeItemFromQueue(itemId, queueId);
+            async queue => {
+                if (queue) await this.server.queueManager.removeItemFromQueue(itemId, queueId);
                 else this.send(JSON.stringify(['REMOVE_ERROR', queueId, "Queue does not exist."]));
             },
-            err => {
+            (err: Error) => {
                 this.send(JSON.stringify(['REMOVE_ERROR', queueId, err.message]));
             }
         );
@@ -173,7 +174,7 @@ export class ServerClient {
 
     // Queue events
     public OnQueueItemAdded(item: Item, queue: Queue) {
-        if (this.authorizedQueueId === queue.id)
+        if (this.authorizedQueueId === queue.id) {
             this.send(JSON.stringify(['ADDED', {
                 queue: {
                     id: queue.id,
@@ -189,11 +190,13 @@ export class ServerClient {
                     modifiers: item.modifiers
                 }
             }]));
+        }
     }
 
     public OnQueueItemRemoved(itemId: number, queueId: number) {
-        if (this.authorizedQueueId === queueId)
+        if (this.authorizedQueueId === queueId) {
             this.send(JSON.stringify(['REMOVED', itemId, queueId]));
+        }
     }
 
 }

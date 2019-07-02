@@ -8,7 +8,7 @@
 import { IMiddlewareable } from './Middleware';
 
 export class RouteHandlerMetadata {
-    
+
     public functionKey: string;
     public routes: RouteMetadata[] = [];
     public beforeMiddleware: IMiddlewareable[] = [];
@@ -19,7 +19,7 @@ export class RouteHandlerMetadata {
         if(beforeMiddleware) this.beforeMiddleware = beforeMiddleware;
         if(afterMiddleware) this.afterMiddleware = afterMiddleware;
     }
-    
+
 }
 
 export class RouteMetadata {
@@ -35,5 +35,5 @@ export class RouteMetadata {
         if(beforeMiddleware) this.beforeMiddleware = beforeMiddleware;
         if(afterMiddleware) this.afterMiddleware = afterMiddleware;
     }
-    
+
 }

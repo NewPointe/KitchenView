@@ -15,26 +15,28 @@ import { Queue } from '../models/Queue';
  * @param promise The promise.
  * @param callback The callback.
  */
-export async function promise2Callback<T, Q = void>(promise: PromiseLike<T>, callback: (err: Error | null, rtn?: T) => Q) {
-    try { return callback(null, await promise); }
-    catch (err) { return callback(err as Error, void 0); }
+export function promise2Callback<T, Q = void>(promise: PromiseLike<T>, callback: (err: Error | null, rtn?: T) => Q) {
+    promise
+        .then(result => callback(null, result))
+        .then(() => { /* noop */}, (error: Error) => callback(error, void 0));
 }
 
 function rejectNull<T>(thing: T | null, message: string) {
-    if (thing == null) throw new Error(message);
+    if (thing === null) throw new Error(message);
     return thing;
 }
 
-export async function getNewOrUpdatedAccount(auth_token: string, merchant: Merchant): Promise<Account> {
+export async function getNewOrUpdatedAccount(auth_token: string, refresh_token: string, merchant: Merchant): Promise<Account> {
     return Account.upsert({
         external_id: merchant.id,
         name: merchant.name,
         email: merchant.email,
         business_name: merchant.business_name || merchant.name,
-        auth_token: auth_token
+        auth_token,
+        refresh_token
     })
         .then(_ => Account.findOne({ where: { external_id: merchant.id } }))
-        .then(account => rejectNull(account, "Could not find account."))
+        .then(account => rejectNull(account, "Could not find account."));
 }
 
 
@@ -43,7 +45,7 @@ export function getClientFilterOptions() {
         id: f.id,
         type: f.typeAliasId,
         ...f.clientOptions
-    }))
+    }));
 }
 
 export async function getAllQueuesForUserId(userId: number) {

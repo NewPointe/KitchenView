@@ -5,11 +5,11 @@
  */
 'use strict';
 
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { Controller, Get } from '../lib/cp3-express-decorators';
 
 import { getAllQueuesForUserId } from '../lib/Util';
-
+import { Request } from '../lib/app/App';
 
 
 @Controller()
@@ -19,10 +19,11 @@ export class PageController {
     public getIndex(req: Request, res: Response, next: NextFunction) {
 
         if (!req.user) res.render('index');
-        else getAllQueuesForUserId(req.user.id).then(
-            UserQueues => res.render('index', { UserQueues })
-        );
-        
+        else {
+            getAllQueuesForUserId(req.user.id).then(
+                UserQueues => res.render('index', { UserQueues })
+            ).catch(next);
+        }
     }
 
     @Get("/login")

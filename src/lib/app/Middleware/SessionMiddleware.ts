@@ -5,36 +5,33 @@
  */
 'use strict';
 
-import { RequestHandler } from 'express';
-import processSession from "express-session";
-import createSequelizeStore = require("connect-session-sequelize");
-const SequelizeStore = createSequelizeStore(processSession.Store);
+import processSession, { Store } from 'express-session';
+import createSequelizeStore = require('connect-session-sequelize');
+const SequelizeStore = createSequelizeStore(Store);
 
 
-import { DatabaseManager } from "../DatabaseManager";
+import { DatabaseManager } from '../DatabaseManager';
+import { Middleware } from './Middleware';
 
-export class SessionMiddleware {
-
-    private _process: RequestHandler;
-    public get process() {
-        return this._process;
-    }
+export class SessionMiddleware extends Middleware {
 
     constructor(sessionSecret: string, dbManager: DatabaseManager) {
-        
-        this._process = processSession({
-            cookie: {
-                // httpOnly: true,
-                // secure: true,
-                sameSite: 'lax',
-            },
-            secret: sessionSecret,
-            store: new SequelizeStore({ db: dbManager.sequelize }),
-            resave: false,
-            proxy: true,
-            saveUninitialized: true,
-        });
-        
+
+        super(
+            processSession({
+                cookie: {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'lax',
+                },
+                secret: sessionSecret,
+                store: new SequelizeStore({ db: dbManager.sequelize }),
+                resave: false,
+                proxy: true,
+                saveUninitialized: true,
+            })
+        );
+
     }
 
 }

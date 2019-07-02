@@ -5,16 +5,11 @@
  */
 'use strict';
 
-import logger from 'morgan';
+import { RequestHandler } from 'express';
 
-import { Middleware } from './Middleware';
-
-export class LoggingMiddleware extends Middleware {
-
-    constructor() {
-
-        super(logger('dev'));
-
+export abstract class Middleware {
+    public readonly process: RequestHandler;
+    constructor(processor: RequestHandler) {
+        this.process = processor;
     }
-
 }

@@ -10,11 +10,6 @@ import { RouteMetadata, RouteHandlerMetadata } from './RouteMetadata';
 
 export const METADATA_TAG = "__cp3_express_controller_metadata__";
 
-export function getMetadata(target: IHasMetadata): ControllerMetadata {
-    if (!target[METADATA_TAG]) target[METADATA_TAG] = new ControllerMetadata();
-    return target[METADATA_TAG]!;
-}
-
 export interface IHasMetadata {
     [METADATA_TAG]?: ControllerMetadata;
 }
@@ -32,12 +27,17 @@ export class ControllerMetadata {
         let handler = this.routeHandlers.get(handlerKey);
         if (!handler) {
             handler = new RouteHandlerMetadata(handlerKey);
-            this.routeHandlers.set(handlerKey, handler)
+            this.routeHandlers.set(handlerKey, handler);
         }
         return handler;
-    } 
+    }
     public addRoute(handlerKey: string, route: RouteMetadata) {
         this.getOrCreateRouteHandler(handlerKey).routes.push(route);
     }
+}
+
+export function getMetadata(target: IHasMetadata): ControllerMetadata {
+    if (!target[METADATA_TAG]) target[METADATA_TAG] = new ControllerMetadata();
+    return target[METADATA_TAG]!;
 }
 

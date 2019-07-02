@@ -12,12 +12,6 @@ import { json as buildJsonParser } from 'body-parser';
 
 import { UseBefore } from './UseBefore';
 
-export function RequireUser() { return UseBefore(doRequireUser) }
-export function GenerateCsrf() { return UseBefore(doGenerateCsrf) }
-export function ValidateCsrf() { return UseBefore(doValidateCsrf) }
-export function ParseJson() { return UseBefore(doParseJson) }
-
-
 export function doRequireUser(req: Request, res: Response, next: NextFunction) {
     if (req.user) next();
     else throw new Error("Unauthorized");
@@ -31,14 +25,14 @@ export function doGenerateCsrf(req: Request, res: Response, next: NextFunction) 
 
 
 function getCsrfFrom(thing: any): string | null {
-    return (thing && "csrfToken" in thing) ? thing.csrfToken : null;
+    return (thing && "csrfToken" in thing) ? thing.csrfToken : null; // tslint:disable-line:no-unsafe-any
 }
 
 
 export function doValidateCsrf(req: Request, res: Response, next: NextFunction) {
     const sessToken = getCsrfFrom(req.session);
     const bodyToken = getCsrfFrom(req.body);
-    if(sessToken !== null && bodyToken !== null && timingSafeEqual(Buffer.from(sessToken, 'utf8'), Buffer.from(bodyToken, 'utf8'))) next()
+    if(sessToken !== null && bodyToken !== null && timingSafeEqual(Buffer.from(sessToken, 'utf8'), Buffer.from(bodyToken, 'utf8'))) next();
     else throw new Error("Invalid CSRF Token");
 }
 
@@ -46,3 +40,9 @@ export function doValidateCsrf(req: Request, res: Response, next: NextFunction) 
 export const doParseJson = buildJsonParser({ verify: (req, res, buf) => {
     return (req as any).rawBody = buf.toString();
 } });
+
+
+export function RequireUser() { return UseBefore(doRequireUser); }
+export function GenerateCsrf() { return UseBefore(doGenerateCsrf); }
+export function ValidateCsrf() { return UseBefore(doValidateCsrf); }
+export function ParseJson() { return UseBefore(doParseJson); }

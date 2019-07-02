@@ -28,7 +28,7 @@ export class SetMap<K, V> {
 
     public delete(key: K, value: V) {
         const set = this.store.get(key);
-        if(set) { 
+        if(set) {
             set.delete(value);
             if(set.size === 0) this.store.delete(key);
         }
