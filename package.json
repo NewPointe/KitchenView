@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p ./src/server",
     "start": "npm run build && node dist/index.js",
     "test": "mocha"
   },
