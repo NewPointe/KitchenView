@@ -33,9 +33,13 @@ export interface Request<TParams = any, TQuery = any, TBody = any> extends Reque
 
 const jsRoot = joinPath(__dirname, '..', '..');
 const modelsRoot = joinPath(jsRoot, 'models');
-const serverRoot = joinPath(jsRoot, '..');
+const distRoot = joinPath(jsRoot, '..');
+const serverRoot = joinPath(distRoot, '..');
 const publicRoot = joinPath(serverRoot, 'public');
 const viewsRoot = joinPath(serverRoot, 'views');
+const clientRoot = joinPath(distRoot, 'client');
+const clientScriptRoot = joinPath(clientRoot, 'scripts');
+const clientStyleRoot = joinPath(clientRoot, 'styles');
 
 export class App {
 
@@ -68,6 +72,8 @@ export class App {
 
         // Setup static files
         this.app.use(express.static(publicRoot));
+        this.app.use('/scripts', express.static(clientScriptRoot));
+        this.app.use('/styles', express.static(clientStyleRoot));
 
         // Setup cookies & session
         this.use(new CookieMiddleware(config.get('cookieSecret')));

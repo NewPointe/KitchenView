@@ -195,7 +195,7 @@ export class ServerClient {
 
     public OnQueueItemRemoved(itemId: number, queueId: number) {
         if (this.authorizedQueueId === queueId) {
-            this.send(JSON.stringify(['REMOVED', itemId, queueId]));
+            this.send(JSON.stringify(['REMOVED', { itemId, queueId }]));
         }
     }
 

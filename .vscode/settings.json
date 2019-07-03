@@ -1,8 +1,8 @@
 {
     "typescript.tsdk": "node_modules/typescript/lib",
     "files.exclude": {
-        "**/*.js": { "when": "$(basename).ts" },
-        "**/*.js.map": { "when": "$(basename)"},
+        //"**/*.js": { "when": "$(basename).ts" },
+        //"**/*.js.map": { "when": "$(basename)"},
         "node_modules": true
     },
     "files.associations": {

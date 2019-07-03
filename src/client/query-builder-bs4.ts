@@ -1,4 +1,11 @@
-$(function () {
+/*!
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+'use strict';
+
+$(() => {
 
     const bs4Templates = {
         group: `
@@ -113,20 +120,29 @@ $(function () {
         error: "fas fa-exclamation-triangle",
     };
 
-    function tryJSON(val, defaultVal) {
-        try { return JSON.parse(val); } catch (e) { return defaultVal; }
+    function tryJSON<TVal, TDefault>(val: string, defaultVal: TDefault) {
+        try { return JSON.parse(val) as TVal; } catch (e) { return defaultVal; }
     }
 
     $('input.js-query-builder').each((i, input) => {
-        const queryBuilderOptions = tryJSON(input.dataset.qbOptions, null);
-        const queryBuilderValue = tryJSON(input.value, null);
-        const $queryBuilder = $(document.createElement('div'));
-        $queryBuilder.insertAfter(input);
-        $queryBuilder.queryBuilder({ ...queryBuilderOptions, templates: bs4Templates, icons: fa5Icons });
-        if (queryBuilderValue) $queryBuilder.queryBuilder('setRules', queryBuilderValue);
-        $queryBuilder.on('rulesChanged.queryBuilder', e => {
-            input.value = JSON.stringify($queryBuilder.queryBuilder('getRules'));
-        });
-    })
+        if(input instanceof HTMLInputElement){
+            const qbOptionsString = input.dataset["qbOptions"];
+            if(!qbOptionsString) return;
+            const queryBuilderOptions = tryJSON<object, null>(qbOptionsString, null);
+            const queryBuilderValue = tryJSON<object, null>(input.value, null);
+            const $queryBuilder = $(document.createElement('div'));
+            $queryBuilder.insertAfter(input);
+            $queryBuilder.queryBuilder({ ...queryBuilderOptions, templates: bs4Templates, icons: fa5Icons });
+            if (queryBuilderValue) $queryBuilder.queryBuilder('setRules', queryBuilderValue);
+            $queryBuilder.on('rulesChanged.queryBuilder', e => {
+                input.value = JSON.stringify($queryBuilder.queryBuilder('getRules'));
+            });
+        }
+    });
 
 });
+
+interface JQuery {
+    queryBuilder(methodName: string, ...methodParams: any[]): any;
+    queryBuilder(config: { [key: string]: any }): any;
+}
