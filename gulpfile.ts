@@ -47,8 +47,8 @@ export async function typescript_client() {
     .pipe(sourcemaps.write("."))
     .pipe(gulp.dest(distDir))
     .pipe(filter('**/*.js'))
-    .pipe(rename(bundleName + ".min.js"))
     .pipe(terser())
+    .pipe(rename(bundleName + ".min.js"))
     .pipe(sourcemaps.write("."))
     .pipe(gulp.dest(distDir));
 }
