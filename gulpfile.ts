@@ -76,6 +76,28 @@ export function sass() {
         .pipe(gulp.dest('./dist/client/styles'));
 }
 
+export function watch_sass() {
+    gulp.watch('./styles/**/*.scss', sass);
+}
+
+export function watch_typescript_client() {
+    gulp.watch(['./src/client/**/*.ts', './src/common/**/*.ts'], typescript_client);
+}
+
+export function watch_typescript_server() {
+    gulp.watch(['./src/server/**/*.ts', './src/common/**/*.ts'], typescript_server);
+}
+
+export function watch_typescript() {
+    watch_typescript_client();
+    watch_typescript_server();
+}
+
+export function watch() {
+    watch_sass();
+    watch_typescript();
+}
+
 export const typescript = gulp.parallel(typescript_client, typescript_server);
 
 export const build = gulp.parallel(typescript, sass);
