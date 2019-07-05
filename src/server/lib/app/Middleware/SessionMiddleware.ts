@@ -21,7 +21,7 @@ export class SessionMiddleware extends Middleware {
             processSession({
                 cookie: {
                     httpOnly: true,
-                    secure: true,
+                    //secure: true,
                     sameSite: 'lax',
                 },
                 secret: sessionSecret,

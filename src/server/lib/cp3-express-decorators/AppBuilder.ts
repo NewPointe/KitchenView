@@ -9,7 +9,7 @@ import { getMetadata, IHasMetadata } from './ControllerMetadata';
 import { Router, IRouterMatcher, RequestHandler } from 'express';
 
 export function controllerToRouter<TArgs extends Array<unknown>>(ControllerType: new(...args: TArgs ) => any, ...args: TArgs) {
-    const controller = new ControllerType(...args) as { [key: string]: RequestHandler };
+    const controller = new ControllerType(...args) as Record<string, RequestHandler>;
     const metadata = getMetadata(ControllerType.prototype as IHasMetadata);
 
     const router = Router({ mergeParams: true });

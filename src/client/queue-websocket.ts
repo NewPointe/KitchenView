@@ -5,7 +5,8 @@
  */
 'use strict';
 
-import { ItemAddedMessageData, ItemRemovedMessageData } from "../common/Message";
+import { Message } from "../common/Websocket/Message/Message";
+import { MessageType } from "../common/Websocket/Message/MessageType";
 
 function setUpSocket() {
 
@@ -25,15 +26,17 @@ function setUpSocket() {
     const ws = new WebSocket(`${wsProtocol}${location.host}/?queueKey=${queueKey}&queueSecret=${queueSecret}`);
 
     ws.onopen = () => {
-        while(itemScreen.firstChild) itemScreen.removeChild(itemScreen.firstChild);
+        while (itemScreen.firstChild) itemScreen.removeChild(itemScreen.firstChild);
         //ws.send(JSON.stringify(["REGISTER", queueId]));
     };
 
     ws.onmessage = (messageevent) => {
         const rawmessage = messageevent.data as string;
-        let message: [string, ...any[]] | null = null;
+
+        let message;
+
         try {
-            message = JSON.parse(rawmessage) as [string, ...any[]];
+            message = Message.Deserialize(rawmessage);
         }
         catch (e) {
             console.log("Error decoding message");
@@ -42,33 +45,28 @@ function setUpSocket() {
             return;
         }
 
-        if (!Array.isArray(message) || message.length < 2) {
-            console.log("Invalid message format:" + rawmessage);
-            return;
-        }
+        switch (message.type) {
+            case MessageType.REGISTERED:
+                console.log(`Successfully registered for updates from queue.`);
+                return;
+            case MessageType.REGISTER_ERROR:
+                console.log(`Error registering for updates from queue.`);
+                return;
+            case MessageType.UNREGISTERED:
+                console.log(`Successfully unregistered for updates from queue.`);
+                return;
+            case MessageType.ADDED:
 
-        switch (message[0]) {
-            case 'REGISTERED':
-                console.log(`Successfully registered for updates from queue ${message[1]}`);
-                return;
-            case 'REGISTER_ERROR':
-                console.log(`Error registering for updates from queue ${message[1]}: ${message[2]}`);
-                return;
-            case 'UNREGISTERED':
-                console.log(`Successfully unregistered for updates from queue ${message[1]}`);
-                return;
-            case 'ADDED':
-                const queueItem = message[1] as ItemAddedMessageData;
-                const item = queueItem.item;
-                const queue = queueItem.queue;
+                const item = message.data.item;
+                const queue = message.data.queue;
 
-                if(itemDeletionLog.has(item.id)) return; // Ignore already-deleted items
+                if (itemDeletionLog.has(item.id)) return; // Ignore already-deleted items
 
                 console.log("New item was added to a queue: ");
-                console.log(message[1]);
+                console.log(item);
 
-                for(const child of itemScreen.children) {
-                    if(child instanceof HTMLElement && +(child.dataset["itemId"] || 0) === item.id) return; // Ignore already-displayed items
+                for (const child of itemScreen.children) {
+                    if (child instanceof HTMLElement && +(child.dataset["itemId"] || 0) === item.id) return; // Ignore already-displayed items
                 }
 
                 const newItem = document.createElement('div');
@@ -115,29 +113,28 @@ function setUpSocket() {
 
                 return;
             case 'REMOVED':
-                const { itemId } = message[1] as ItemRemovedMessageData;
 
                 const now = Date.now();
 
                 // Add to deletion log
-                itemDeletionLog.set(itemId, now);
+                itemDeletionLog.set(message.data.itemId, now);
 
                 // clear old entries (older than 5 min) from deletion log
-                for(const id of itemDeletionLog.keys()) {
-                    if(itemDeletionLog.get(id) || 0 < now - (5*60*1000)) {
+                for (const id of itemDeletionLog.keys()) {
+                    if (itemDeletionLog.get(id) || 0 < now - (5 * 60 * 1000)) {
                         itemDeletionLog.delete(id);
                     }
                 }
 
                 const children = Array.from(itemScreen.children); // Copy nodelist to array so we can delete while iterating
-                for(const child of children) {
-                    if(child instanceof HTMLElement && +(child.dataset["itemId"] || 0) === +itemId) {
+                for (const child of children) {
+                    if (child instanceof HTMLElement && +(child.dataset["itemId"] || 0) === message.data.itemId) {
                         itemScreen.removeChild(child);
                     }
                 }
 
                 console.log("Item was removed from a queue: ");
-                console.log(message[1], message[2]);
+                console.log(message.data);
                 return;
             default:
                 console.log("Unknown message type: " + rawmessage);

@@ -10,7 +10,7 @@ import { Request, Response, NextFunction } from 'express';
 
 export function LoadCommonMergeFields(req: Request, res: Response, next: NextFunction) {
 
-    const locals = res.locals as { [key: string]: any };
+    const locals = res.locals as Record<string, any>;
 
     locals.CurrentUser = req.user;
     locals.Session = req.session;

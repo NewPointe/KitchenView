@@ -13,27 +13,7 @@ export enum MessageType {
     UNREGISTERED = "UNREGISTERED",
     REMOVE = "REMOVE",
     REMOVED = "REMOVED",
+    REMOVE_ERROR = "REMOVE_ERROR",
     ADDED = "ADDED",
     ERROR = "ERROR",
-}
-
-export interface ItemAddedMessageData {
-    queue: {
-        id: number,
-        name: string
-    };
-    item: {
-        id: number,
-        name: string,
-        quantity: number,
-        category: string,
-        variation: string,
-        notes: string,
-        modifiers: string
-    };
-}
-
-export interface ItemRemovedMessageData {
-    itemId: number;
-    queueId: number;
 }

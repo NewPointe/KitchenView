@@ -6,29 +6,21 @@
 'use strict';
 
 import { IncomingMessage, ClientRequest } from 'http';
-import { pseudoRandomBytes } from 'crypto';
 
-import { Request } from 'express';
 import WebSocket from 'ws';
 
 import { WebsocketServer } from './WebsocketServer';
-import { tryParseMessage } from './MessageUtils';
 
 import { Queue } from '../../models/Queue';
 import { Item } from '../../models/Item';
 import { QueueItem } from '../../models/QueueItem';
 import { getOneQueueForUserId } from '../Util';
 
+import { Message } from '../../../common/Websocket/Message/Message';
+import { MessageType } from '../../../common/Websocket/Message/MessageType';
+
 const KEEPALIVE_INTERVAL = 1000 * 5; // 5 seconds
 const KEEPALIVE_MAX_TIME = 1000 * 20; // 20 seconds (4 missed pings)
-
-export function guidv4() {
-    const buffer = pseudoRandomBytes(16);
-    buffer[6] = (buffer[6] & 0x0f) | 0x40;
-    buffer[8] = (buffer[8] & 0x3f) | 0x80;
-    let i = 0;
-    return "xxxx-xx-xx-xx-xxxxxx".replace(/x/g, () => (buffer[i++] + 0x100).toString(16).substr(1));
-}
 
 export class ServerClient {
 
@@ -131,15 +123,15 @@ export class ServerClient {
 
     private OnMessage(rawmessage: string | Buffer | ArrayBuffer | Buffer[]) {
         this.keepaliveLastContact = Date.now();
-        const message = tryParseMessage(rawmessage.toString());
-        if (message) {
-            switch (message[0]) {
-                case 'REMOVE':
-                    const messageAlt = message as unknown as [string, number, number];
-                    return this.OnMessage_RemoveQueueItem(+messageAlt[1], +messageAlt[2]);
+        try {
+            const message = Message.Deserialize(rawmessage.toString());
+            switch (message.type) {
+                case MessageType.REMOVE:
+                    return this.OnMessage_RemoveQueueItem(message.data.itemId, message.data.queueId);
             }
-        } else {
-            this.send(JSON.stringify(['ERROR', "Invalid Message"]));
+        }
+        catch(e) {
+            console.error(e);
         }
     }
 
@@ -164,10 +156,10 @@ export class ServerClient {
         getOneQueueForUserId(this.authorizedUserId, queueId).then(
             async queue => {
                 if (queue) await this.server.queueManager.removeItemFromQueue(itemId, queueId);
-                else this.send(JSON.stringify(['REMOVE_ERROR', queueId, "Queue does not exist."]));
+                else this.send(new Message(MessageType.REMOVE_ERROR, { itemId, queueId, message: "Queue does not exist." }).Serialize());
             },
             (err: Error) => {
-                this.send(JSON.stringify(['REMOVE_ERROR', queueId, err.message]));
+                this.send(new Message(MessageType.REMOVE_ERROR, { itemId, queueId, message: err.message }).Serialize());
             }
         );
     }
@@ -175,27 +167,30 @@ export class ServerClient {
     // Queue events
     public OnQueueItemAdded(item: Item, queue: Queue) {
         if (this.authorizedQueueId === queue.id) {
-            this.send(JSON.stringify(['ADDED', {
-                queue: {
-                    id: queue.id,
-                    name: queue.name
-                },
-                item: {
-                    id: item.id,
-                    name: item.name,
-                    quantity: item.quantity,
-                    category: item.category,
-                    variation: item.variation,
-                    notes: item.notes,
-                    modifiers: item.modifiers
+            this.send(new Message(
+                MessageType.ADDED,
+                {
+                    queue: {
+                        id: queue.id,
+                        name: queue.name
+                    },
+                    item: {
+                        id: item.id,
+                        name: item.name,
+                        quantity: item.quantity,
+                        category: item.category,
+                        variation: item.variation,
+                        notes: item.notes,
+                        modifiers: item.modifiers
+                    }
                 }
-            }]));
+            ).Serialize());
         }
     }
 
     public OnQueueItemRemoved(itemId: number, queueId: number) {
         if (this.authorizedQueueId === queueId) {
-            this.send(JSON.stringify(['REMOVED', { itemId, queueId }]));
+            this.send(new Message(MessageType.REMOVED, { itemId, queueId }).Serialize());
         }
     }
 

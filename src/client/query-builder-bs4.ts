@@ -144,5 +144,5 @@ $(() => {
 
 interface JQuery {
     queryBuilder(methodName: string, ...methodParams: any[]): any;
-    queryBuilder(config: { [key: string]: any }): any;
+    queryBuilder(config: Record<string, any>): any;
 }
