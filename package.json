@@ -6,7 +6,9 @@
   "scripts": {
     "build": "gulp",
     "start": "gulp && node dist/server/index.js",
-    "test": "mocha"
+    "test": "snyk test && mocha",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "author": "Tyler Schrock <tschrock123@gmail.com>",
   "license": "MPL-2.0",
@@ -17,23 +19,22 @@
     "convict": "^5.0.0",
     "cookie-parser": "^1.4.4",
     "debug": "^4.1.1",
-    "del": "^4.1.1",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
     "http-errors": "^1.7.3",
     "morgan": "^1.9.1",
     "passport": "^0.4.0",
     "passport-oauth2": "^1.5.0",
-    "passport-square": "^2.0.1",
     "pug": "^2.0.4",
     "query-string": "^6.8.1",
     "querybuilder-helper": "0.0.2-beta",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
-    "sequelize": "^5.9.0",
+    "sequelize": "^5.9.2",
     "sequelize-typescript": "^1.0.0-beta.3",
     "serve-favicon": "^2.5.0",
+    "snyk": "^1.192.0",
     "winston": "^3.2.1",
     "ws": "^7.0.1"
   },
@@ -56,7 +57,7 @@
     "@types/http-errors": "^1.6.1",
     "@types/jquery": "^3.3.30",
     "@types/morgan": "^1.7.35",
-    "@types/node": "^12.0.10",
+    "@types/node": "^12.0.12",
     "@types/passport": "^1.0.0",
     "@types/passport-oauth2": "^1.4.8",
     "@types/request": "^2.48.1",
@@ -68,6 +69,7 @@
     "browserify": "^16.2.3",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "del": "^5.0.0",
     "gulp": "^4.0.2",
     "gulp-buffer": "0.0.2",
     "gulp-filter": "^6.0.0",
@@ -91,5 +93,6 @@
     "pg-hstore": "^2.3.3",
     "sqlite3": "^4.0.9",
     "tedious": "^6.2.0"
-  }
+  },
+  "snyk": true
 }
