@@ -5,7 +5,7 @@
  */
 'use strict';
 
-// tslint:disable:no-implicit-dependencies no-var-requires
+// tslint:disable:no-implicit-dependencies
 import gulp from 'gulp';
 import glob from 'glob';
 import del from 'del';
@@ -16,8 +16,14 @@ import source from 'vinyl-source-stream';
 import terser from 'gulp-terser';
 import rename from 'gulp-rename';
 import filter from 'gulp-filter';
+import gulp_sass from 'gulp-sass';
+import node_sass from 'node-sass';
+// tslint:disable:no-var-requires
 const tsify = require('tsify');
 const buffer = require('gulp-buffer');
+// tslint:enable
+
+(gulp_sass as any).compiler = node_sass;
 
 export async function clean() {
     return del("./dist");
@@ -62,6 +68,16 @@ export async function typescript_server() {
         .pipe(gulp.dest("./dist"));
 }
 
+export function sass() {
+    return gulp.src('./styles/**/*.scss')
+        .pipe(sourcemaps.init())
+        .pipe(gulp_sass().on('error', gulp_sass.logError)) // tslint:disable-line:no-unbound-method
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('./dist/client/styles'));
+}
+
 export const typescript = gulp.parallel(typescript_client, typescript_server);
 
-export default gulp.series(clean, typescript);
+export const build = gulp.parallel(typescript, sass);
+
+export default gulp.series(clean, build);
