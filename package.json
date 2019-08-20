@@ -31,7 +31,7 @@
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
-    "sequelize": "^5.9.2",
+    "sequelize": "^5.15.1",
     "sequelize-typescript": "^1.0.0-beta.3",
     "serve-favicon": "^2.5.0",
     "snyk": "^1.192.0",
