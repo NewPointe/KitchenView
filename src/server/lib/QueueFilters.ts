@@ -72,18 +72,18 @@ export const queueFilters = [
         "device.name",
         "string",
         { label: "Register Name", optgroup: "register" },
-        (i: FilterableItem) => new Date(i.payment.device.name)
+        (i: FilterableItem) => i.payment.device.name
     ),
     new Filter(
         "device.id",
         "string",
         { label: "Register Id", optgroup: "register" },
-        (i: FilterableItem) => new Date(i.payment.device.id)
+        (i: FilterableItem) => i.payment.device.id
     ),
     new Filter(
         "location.id",
         "string",
         { label: "Location Id", optgroup: "location" },
-        (i: FilterableItem) => new Date(i.notification.location_id)
+        (i: FilterableItem) => i.notification.location_id
     ),
 ];
