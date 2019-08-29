@@ -5,7 +5,7 @@
  */
 'use strict';
 
-import processSession, { Store } from 'express-session';
+import buildSessionHandler, { Store } from 'express-session';
 import createSequelizeStore = require('connect-session-sequelize');
 const SequelizeStore = createSequelizeStore(Store);
 
@@ -18,7 +18,7 @@ export class SessionMiddleware extends Middleware {
     constructor(sessionSecret: string, dbManager: DatabaseManager) {
 
         super(
-            processSession({
+            buildSessionHandler({
                 cookie: {
                     httpOnly: true,
                     //secure: true,

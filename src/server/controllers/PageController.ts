@@ -5,25 +5,19 @@
  */
 'use strict';
 
-import { Response, NextFunction } from 'express';
-import { Controller, Get } from '../lib/cp3-express-decorators';
+import { Request, Response, NextFunction } from 'express';
+
+import { Account } from '../models/Account';
 
 import { getAllQueuesForUserId } from '../lib/Util';
-import { Request } from '../lib/app/App';
+import { Controller, Get, Render, User } from '../lib/cp3-express';
 
-
-@Controller()
-export class PageController {
+export class PageController extends Controller<PageController> {
 
     @Get("/")
-    public getIndex(req: Request, res: Response, next: NextFunction) {
-
-        if (!req.user) res.render('index');
-        else {
-            getAllQueuesForUserId(req.user.id).then(
-                UserQueues => res.render('index', { UserQueues })
-            ).catch(next);
-        }
+    @Render("index")
+    public async getIndex(@User() user: Account) {
+        return user ? { UserQueues: await getAllQueuesForUserId(user.id) } : { };
     }
 
     @Get("/login")
@@ -33,7 +27,7 @@ export class PageController {
 
     @Get("/logout")
     public getLogout(req: Request, res: Response, next: NextFunction) {
-        req.logout();
+        (req as any).logout();
         res.redirect('/');
     }
 

@@ -105,7 +105,10 @@ function setUpSocket() {
                 removeButton.innerText = "Remove";
                 removeButton.addEventListener("click", e => {
                     removeButton.innerText = "Removing...";
-                    ws.send(JSON.stringify(["REMOVE", item.id, queue.id]));
+                    ws.send(new Message(MessageType.REMOVE, {
+                        itemId: item.id,
+                        queueId: queue.id
+                    }).Serialize());
                 });
                 newItem.append(removeButton);
 

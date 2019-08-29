@@ -52,5 +52,5 @@ export async function getAllQueuesForUserId(userId: number) {
     return Queue.findAll({ where: { accountId: userId } });
 }
 export async function getOneQueueForUserId(userId: number, queueId: number) {
-    return Queue.findOne({ where: { id: queueId, accountId: userId } });
+    return Queue.findOne({ where: { id: queueId, accountId: userId }, rejectOnEmpty: true });
 }

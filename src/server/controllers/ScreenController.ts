@@ -5,35 +5,33 @@
  */
 'use strict';
 
-import httpError from 'http-errors';
-import { Response, NextFunction } from 'express';
-import { Controller, Get, RequireUser, GenerateCsrf } from '../lib/cp3-express-decorators';
+import { Controller, Get, RequireUser, GenerateCsrf, Use, Param, User, Render, AsId, Required } from '../lib/cp3-express';
 
 import { Queue } from '../models/Queue';
 import { Screen } from '../models/Screen';
-import { Request } from '../lib/app/App';
+import { Account } from '../models/Account';
 
-@Controller()
-@RequireUser()
-export class ScreenController {
+@Use(RequireUser)
+export class ScreenController extends Controller<ScreenController> {
 
     @Get("/")
-    @GenerateCsrf()
-    public getOne(req: Request<{ queueId: string }, { queueId: string }>, res: Response, next: NextFunction) {
+    @Use(GenerateCsrf)
+    @Render("screens/index")
+    public async getOne(
+        @Param("queueId") @AsId() @Required() queueId: number,
+        @User() user: Account
+    ) {
 
-        const queueId = +(req.params["queueId"] || 0) || +(req.query["queueId"] || 0);
-        Queue.findOne({
-            where: {
-                id: queueId,
-                accountId: req.user.id
-            },
-            include: [Screen]
-        }).then(
-            queue => {
-                if(queue !== null) res.render('screens/index', { Queue: queue });
-                else next(new httpError.NotFound());
-            }
-        ).catch(next);
+        return {
+            Queue: await Queue.findOne({
+                where: {
+                    id: queueId,
+                    accountId: user.id
+                },
+                include: [Screen],
+                rejectOnEmpty: true
+            })
+        };
 
     }
 

@@ -17,10 +17,15 @@ export type VerifyFunction = (token: string, tokenSecret: string, profile: Profi
 export type DeserializeDone = VerifyDone;
 export type SerializeDone = (error: Error | null, userId?: number) => void;
 
+async function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function registerAllLocations(accessToken: string) {
     const client = new ApiClient(accessToken);
     const locations = await client.getLocations();
     for(const loc of locations) {
+        await sleep(300);
         await client.registerWebhooks(loc.id, [WebhookEventType.PAYMENT_UPDATED]);
     }
 }

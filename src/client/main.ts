@@ -5,6 +5,66 @@
  */
 'use strict';
 
+//==============================//
+//            Utils             //
+//==============================//
+
+function tryQuerySelector(selector: string | undefined) {
+    if (!selector) return null;
+    try {
+        return document.querySelector(selector);
+    }
+    catch {
+        return null;
+    }
+}
+
+function fetchJson(input: Request) {
+    return fetch({
+        ...input,
+        headers: new Headers({
+            "Accept": "application/json",
+            "Content-Type": "application/json; charset=utf-8",
+            ...input.headers
+        })
+    });
+}
+
+
+//==============================//
+//     AJAX Form Submission     //
+//==============================//
+
+function submitAjaxForm(event: Event) {
+
+    // Prevent the default form submission
+    event.preventDefault();
+
+    // Make sure it's an HTML Form element
+    if (event.currentTarget instanceof HTMLFormElement) {
+
+        // const form = event.currentTarget;
+
+        // Get the submission details
+        // const target = form.target || ".";
+        // const method = form.method || "GET";
+
+        // // Get the form details
+        // const infoboxSelector = form.dataset["infobox"];
+        // const infobox = tryQuerySelector(infoboxSelector);
+
+
+
+    }
+}
+
+document.querySelectorAll("form.js-ajax-form").forEach(e => e.addEventListener('submit', submitAjaxForm));
+
+
+
+
+
+
 $('#edit-queue-form').on('submit', submitEvent => {
     submitEvent.preventDefault();
 

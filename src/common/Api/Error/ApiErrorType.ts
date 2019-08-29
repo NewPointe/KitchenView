@@ -5,16 +5,6 @@
  */
 'use strict';
 
-import buildLogger from 'morgan';
-
-import { Middleware } from './Middleware';
-
-export class LoggingMiddleware extends Middleware {
-
-    constructor() {
-
-        super(buildLogger('dev'));
-
-    }
-
+export enum ApiErrorType {
+    FIELD_VALIDATION_ERROR = "FIELD_VALIDATION_ERROR"
 }

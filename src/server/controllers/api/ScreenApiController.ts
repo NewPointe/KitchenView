@@ -8,69 +8,56 @@
 import { randomBytes } from 'crypto';
 
 import base64url from 'base64url';
-import { Response, NextFunction } from 'express';
-import { Controller, Post, Delete, RequireUser, ValidateCsrf, ParseJson } from '../../lib/cp3-express-decorators';
+import { Controller, Post, Delete, RequireUser, ValidateCsrf, ParseJson, Use, User, RenderJSON, AsInt, Required } from '../../lib/cp3-express';
 
 import { Queue } from '../../models/Queue';
 import { Screen } from '../../models/Screen';
-import { Request } from '../../lib/app/App';
+import { Param } from '../../lib/cp3-express';
+import { getOneQueueForUserId } from '../../lib/Util';
+import { Account } from '../../models/Account';
 
-@Controller()
-@RequireUser()
-export class ScreenApiController {
+@Use(RequireUser)
+export class ScreenApiController extends Controller<ScreenApiController> {
 
     @Post("/")
-    @ParseJson()
-    @ValidateCsrf()
-    public create(req: Request<{ queueId: string }, { queueId: string }, { queueId: string }>, res: Response, next: NextFunction) {
+    @Use(ParseJson)
+    @Use(ValidateCsrf)
+    @RenderJSON()
+    public async create(
+        @Param("queueId") @AsInt() @Required() queueId: string,
+        @User() @Required() user: Account
+    ) {
 
-        const queueId = +(req.params["queueId"] || req.query["queueId"] || req.body["queueId"] || 0);
-        Queue.findOne({
-            where: {
-                id: queueId,
-                accountId: req.user.id
-            }
-        }).then(
-            queue => {
-                if (queue) {
-                    Screen.create({
-                        queueId: queue.id,
-                        viewKey: base64url.encode(randomBytes(16)),
-                        viewSecret: base64url.encode(randomBytes(16))
-                    }).then(
-                        screen => res.status(204).send()
-                    ).catch(
-                        (err: Error) => res.status(500).json({ message: err.message })
-                    );
-                }
-                else res.status(404).json({ message: "That Queue does not exist." });
-            }
-        ).catch(
-            (err: Error) => res.status(500).json({ message: err.message })
-        );
+        const queue = await getOneQueueForUserId(user.id, +(queueId || 0));
+
+        return await Screen.create({
+            queueId: queue.id,
+            viewKey: base64url.encode(randomBytes(16)),
+            viewSecret: base64url.encode(randomBytes(16))
+        });
 
     }
 
     @Delete("/:screenId")
-    public deleteOne(req: Request<{ screenId: string }>, res: Response, next: NextFunction) {
+    @RenderJSON()
+    public async deleteOne(
+        @Param("screenId") @AsInt() @Required() screenId: number,
+        @User() @Required() user: Account
+    ) {
 
-        const screenId = +(req.params["screenId"] || 0);
-        Screen.findOne({
+        const screen = await Screen.findOne({
             where: { id: screenId },
-            include: [Queue]
-        }).then(
-            screen => {
-                if (screen && screen.queue.accountId === req.user.id) {
-                    screen.destroy().then(
-                        () => res.status(204).send(),
-                        (err: Error) => res.status(500).json({ message: err.message })
-                    );
-                }
-                else res.status(404).json({ message: "That Screen does not exist." });
-            }
-        ).catch(
-            (err: Error) => res.status(500).json({ message: err.message })
-        );
+            include: [Queue],
+            rejectOnEmpty: true
+        });
+
+        if(screen.queue.accountId === user.id) {
+            await screen.destroy();
+            return;
+        }
+        else {
+            return null;
+        }
 
     }
 }

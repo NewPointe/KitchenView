@@ -5,7 +5,7 @@
  */
 'use strict';
 
-import processCookies from 'cookie-parser';
+import buildCookieHandler from 'cookie-parser';
 
 import { Middleware } from './Middleware';
 
@@ -13,7 +13,7 @@ export class CookieMiddleware extends Middleware {
 
     constructor(cookieSecret: string) {
 
-        super(processCookies(cookieSecret));
+        super(buildCookieHandler(cookieSecret));
 
     }
 

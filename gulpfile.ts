@@ -64,7 +64,7 @@ export async function typescript_server() {
     return tsProject_server.src()
         .pipe(sourcemaps.init())
         .pipe(tsProject_server())
-        .pipe(sourcemaps.write('.', { includeContent: false, sourceRoot: '../../src/' }))
+        .pipe(sourcemaps.write('.', { includeContent: false, sourceRoot: '.' }))
         .pipe(gulp.dest("./dist"));
 }
 

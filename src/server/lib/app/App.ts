@@ -7,9 +7,7 @@
 
 import { join as joinPath } from 'path';
 
-import express, { RequestHandler, Request as RequestBase } from 'express';
-
-import { controllerToRouter } from '../cp3-express-decorators/AppBuilder';
+import express, { RequestHandler } from 'express';
 
 import { AuthMiddleware, CookieMiddleware, SessionMiddleware, LoggingMiddleware, LoadCommonMergeFields, HandleNotFound, HandleErrors } from './Middleware';
 import { DatabaseManager } from './DatabaseManager';
@@ -20,14 +18,7 @@ import { ScreenViewController, ScreenController, QueueController, QueueApiContro
 import { IConfig } from '../Config';
 import { QueueManager } from './QueueManager';
 import { Middleware } from './Middleware/Middleware';
-import { Account } from '../../models/Account';
-
-export interface Request<TParams = any, TQuery = any, TBody = any> extends RequestBase {
-    user: Account;
-    params: Partial<TParams>;
-    query: Partial<TQuery>;
-    body: Partial<TBody>;
-}
+import { ExpressApp } from '../cp3-express/ExpressApp';
 
 // Common dirs
 
@@ -41,9 +32,8 @@ const clientRoot = joinPath(distRoot, 'client');
 const clientScriptRoot = joinPath(clientRoot, 'scripts');
 const clientStyleRoot = joinPath(clientRoot, 'styles');
 
-export class App {
+export class App extends ExpressApp {
 
-    private app: express.Express;
     private dbManager: DatabaseManager;
     private httpManager: HttpManager;
     public readonly websocketManager: WebsocketManager;
@@ -51,14 +41,13 @@ export class App {
 
     constructor(config: IConfig) {
 
+        super();
+
         // Setup database
         this.dbManager = new DatabaseManager(modelsRoot, config.get('db'));
 
         // Setup queue management
         this.queueManager = new QueueManager();
-
-        // Setup express app
-        this.app = express();
 
         // Set proxy trust
         this.app.set('trust proxy', 1);
@@ -68,7 +57,7 @@ export class App {
         this.app.set('view engine', 'pug');
 
         // Setup request logging
-        this.use(new LoggingMiddleware());
+        this.useMiddleware(new LoggingMiddleware());
 
         // Setup static files
         this.app.use(express.static(publicRoot));
@@ -76,9 +65,9 @@ export class App {
         this.app.use('/styles', express.static(clientStyleRoot));
 
         // Setup cookies & session
-        this.use(new CookieMiddleware(config.get('cookieSecret')));
+        this.useMiddleware(new CookieMiddleware(config.get('cookieSecret')));
         const session = new SessionMiddleware(config.get('cookieSecret'), this.dbManager);
-        this.use(session);
+        this.useMiddleware(session);
 
         // Setup Square auth
         const auth = new AuthMiddleware({
@@ -87,20 +76,20 @@ export class App {
         });
         this.app.use(auth.process);
         this.app.use(auth.processSession);
-        this.app.use('/auth/square', auth.processSquare);
-        this.app.use('/auth/square/callback', auth.processSquareCallback);
+        this.app.get('/auth/square', auth.processSquare);
+        this.app.get('/auth/square/callback', auth.processSquareCallback);
 
         // Setup view locals
         this.app.use(LoadCommonMergeFields);
 
         // Setup view controllers
-        this.app.use('/', controllerToRouter(PageController));
-        this.app.use('/screen', controllerToRouter(ScreenViewController));
-        this.app.use('/queues', controllerToRouter(QueueController));
-        this.app.use('/queues/:queueId/screens', controllerToRouter(ScreenController));
-        this.app.use('/api/queues', controllerToRouter(QueueApiController));
-        this.app.use('/api/screens', controllerToRouter(ScreenApiController));
-        this.app.use('/webhook', controllerToRouter(WebhookController, this.queueManager));
+        this.useController('/', new PageController());
+        this.useController('/screen', new ScreenViewController());
+        this.useController('/queues', new QueueController());
+        this.useController('/queues/:queueId/screens', new ScreenController(), { mergeParams: true });
+        this.useController('/api/queues', new QueueApiController());
+        this.useController('/api/screens', new ScreenApiController());
+        this.useController('/webhook', new WebhookController(this.queueManager));
 
         // Setup 404 & error handling
         this.app.use(HandleNotFound);
@@ -114,7 +103,7 @@ export class App {
 
     }
 
-    public use(thing: Middleware | RequestHandler) {
+    public useMiddleware(thing: Middleware | RequestHandler) {
         if(thing instanceof Middleware) this.app.use(thing.process);
         else this.app.use(thing);
     }

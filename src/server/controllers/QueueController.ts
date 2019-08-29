@@ -5,41 +5,39 @@
  */
 'use strict';
 
-import { Response, NextFunction } from 'express';
-import { Controller, Get, RequireUser, GenerateCsrf } from '../lib/cp3-express-decorators';
+import { Controller, Get, RequireUser, GenerateCsrf, Render, RouteParam, User, Use, AsId, Required } from '../lib/cp3-express';
 
 import { getClientFilterOptions, getAllQueuesForUserId, getOneQueueForUserId } from '../lib/Util';
-import { Request } from '../lib/app/App';
+import { Account } from '../models/Account';
 
-@Controller()
-@RequireUser()
-export class QueueController {
+@Use(RequireUser)
+export class QueueController extends Controller<QueueController>{
 
     @Get("/")
-    public getIndex(req: Request, res: Response, next: NextFunction) {
-
-        getAllQueuesForUserId(req.user.id).then(
-            UserQueues => res.render('queues', { UserQueues })
-        ).catch(next);
-
+    @Render("queues")
+    public async getIndex(@User() user: Account) {
+        return { UserQueues: await getAllQueuesForUserId(user.id) };
     }
 
     @Get("/new")
-    @GenerateCsrf()
-    public getNew(req: Request, res: Response, next: NextFunction) {
-
-        res.render('queues/edit', { FilterOptions: getClientFilterOptions() });
-
+    @Use(GenerateCsrf)
+    @Render("queues/edit")
+    public getNew() {
+        return { FilterOptions: getClientFilterOptions() };
     }
 
-    @Get("/:id/edit")
-    @GenerateCsrf()
-    public getEdit(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+    @Get("/:queueId(\\d+)/edit")
+    @Use(GenerateCsrf)
+    @Render("queues/edit")
+    public async getEdit(
+        @RouteParam("queueId") @AsId() @Required() queueId: number,
+        @User() user: Account
+    ) {
 
-        const queueId = +(req.params["id"] || 0);
-        getOneQueueForUserId(req.user.id, queueId).then(
-            Queue => res.render('queues/edit', { Queue, FilterOptions: getClientFilterOptions() })
-        ).catch(next);
+        return {
+            Queue: await getOneQueueForUserId(user.id, queueId),
+            FilterOptions: getClientFilterOptions()
+        };
 
     }
 

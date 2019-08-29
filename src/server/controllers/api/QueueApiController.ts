@@ -5,12 +5,13 @@
  */
 'use strict';
 
-import { Response, NextFunction } from 'express';
-import { Controller, Get, Post, Delete, RequireUser, ValidateCsrf, ParseJson } from '../../lib/cp3-express-decorators';
+import httpError from 'http-errors';
+
+import { Controller, Get, Post, Delete, RequireUser, ValidateCsrf, ParseJson, Use, Body, RouteParam, User, RenderJSON, AsId, Required, BodyParam } from '../../lib/cp3-express';
 
 import { getAllQueuesForUserId, getOneQueueForUserId } from '../../lib/Util';
 import { Queue } from '../../models/Queue';
-import { Request } from '../../lib/app/App';
+import { Account } from '../../models/Account';
 
 interface IQueue {
     crfToken?: string;
@@ -31,90 +32,81 @@ function queueToJson(queue: Queue) {
     return { id: queue.id, name: queue.name, filter: queue.filter };
 }
 
-@Controller()
-@RequireUser()
-export class QueueApiController {
+@Use(RequireUser)
+export class QueueApiController extends Controller<QueueApiController> {
 
     @Get("/")
-    public getIndex(req: Request, res: Response, next: NextFunction) {
+    @RenderJSON()
+    public async getIndex(
+        @User() user: Account
+    ) {
 
-        getAllQueuesForUserId(req.user.id).then(
-            queues => res.json(queues.map(queueToJson))
-        ).catch(
-            (err: Error) => res.status(500).json({ message: err.message })
-        );
+        return (await getAllQueuesForUserId(user.id)).map(queueToJson);
 
     }
 
     @Post("/")
-    @Post("/:id")
-    @ParseJson()
-    @ValidateCsrf()
-    public createOrEdit(req: Request<{ id: string }, never, Queue>, res: Response, next: NextFunction) {
+    @Post("/:queueId(\\d+)")
+    @Use(ParseJson)
+    @Use(ValidateCsrf)
+    @RenderJSON()
+    public async createOrEdit(
+        @RouteParam("queueId") @AsId({ default: null }) queueId: number | null,
+        @BodyParam("queueId") @AsId({ default: null }) altQueueId: number | null,
+        @Body() newQueue: Partial<IQueue>,
+        @User() user: Account
+    ) {
 
-        const newQueue = req.body;
-        if (!checkQueue(newQueue)) res.status(400).json({ message: "Queue must have a 'name' and 'filter'." });
+        if (!checkQueue(newQueue)) throw new httpError.BadRequest("Queue must have a 'name' and 'filter'.");
 
-        const queueId = req.params["id"] || newQueue.id;
-        if(typeof queueId !== 'undefined' ) {
-            getOneQueueForUserId(req.user.id, +queueId).then(
-                queue => {
-                    if (queue) {
-                        queue.update({ name: newQueue.name, filter: newQueue.filter }).then(
-                            () => res.status(204).send(),
-                            (err: Error) => res.status(500).json({ message: err.message })
-                        );
-                    }
-                    else res.status(404).json({ message: "That Queue does not exist." });
-                },
-                (err: Error) => res.status(500).json({ message: err.message })
-            );
-        }
-        else {
-            Queue.create({
+        const existingQueueId = queueId || altQueueId;
+
+        if (existingQueueId == null) {
+
+            const updatedQueue = await Queue.create({
                 name: newQueue.name,
                 filter: newQueue.filter,
-                accountId: req.user.id
-            }).then(
-                queue => res.status(200).json(queueToJson(queue)),
-                (err: Error) => res.status(500).json({ message: err.message })
-            );
+                accountId: user.id
+            });
+
+            return queueToJson(updatedQueue);
+
+        }
+        else {
+
+            const existingQueue = await getOneQueueForUserId(user.id, existingQueueId);
+
+            const updatedQueue = await existingQueue.update({ name: newQueue.name, filter: newQueue.filter });
+
+            return queueToJson(updatedQueue);
+
         }
 
     }
 
-    @Get("/:id")
-    public getOne(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+    @Get("/:queueId(\\d+)")
+    @RenderJSON()
+    public async getOne (
+        @RouteParam("queueId") @AsId() @Required() queueId: number,
+        @User() user: Account
+    ) {
 
-        const queueId = +(req.params["id"] || 0);
-        getOneQueueForUserId(req.user.id, queueId).then(
-            queue => {
-                if (queue) res.status(200).json({ id: queue.id, name: queue.name, filter: queue.filter });
-                else res.status(404).json({ message: "That Queue does not exist." });
-            }
-        ).catch(
-            (err: Error) => res.status(500).json({ message: err.message })
-        );
+        var queue = await getOneQueueForUserId(user.id, queueId);
+
+        return { id: queue.id, name: queue.name, filter: queue.filter };
 
     }
 
-    @Delete("/:id")
-    public deleteOne(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+    @Delete("/:queueId(\\d+)")
+    @RenderJSON()
+    public async deleteOne(
+        @RouteParam("queueId") @AsId() @Required() queueId: number,
+        @User() user: Account
+    ) {
 
-        const queueId = +(req.params["id"] || 0);
-        getOneQueueForUserId(req.user.id, queueId).then(
-            queue => {
-                if (queue) {
-                    queue.destroy().then(
-                        () => res.status(204).send(),
-                        (err: Error) => res.status(500).json({ message: err.message })
-                    );
-                }
-                else res.status(404).json({ message: "That Queue does not exist." });
-            }
-        ).catch(
-            (err: Error) => res.status(500).json({ message: err.message })
-        );
+        var queue = await getOneQueueForUserId(user.id, queueId);
+
+        await queue.destroy();
 
     }
 

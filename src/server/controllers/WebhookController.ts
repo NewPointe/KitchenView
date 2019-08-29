@@ -6,7 +6,7 @@
 'use strict';
 
 import { Request, Response, NextFunction } from 'express';
-import { Controller, Post, ParseJson } from '../lib/cp3-express-decorators';
+import { Controller, Post, ParseJson, Use } from '../lib/cp3-express';
 
 import { QueueManager } from '../lib/app/QueueManager';
 import { isNotification } from '../lib/SquareWebhook';
@@ -15,17 +15,17 @@ import { Account } from '../models/Account';
 import { ApiClient } from '../lib/Square/ApiClient';
 import { Item } from '../models/Item';
 
-@Controller()
-export class WebhookController {
+export class WebhookController extends Controller<WebhookController> {
 
     private queueManager: QueueManager;
 
     constructor(queueManager: QueueManager) {
+        super();
         this.queueManager = queueManager;
     }
 
     @Post("/")
-    @ParseJson()
+    @Use(ParseJson)
     public postNotification(req: Request, res: Response, next: NextFunction) {
 
         // Always respond with a 200

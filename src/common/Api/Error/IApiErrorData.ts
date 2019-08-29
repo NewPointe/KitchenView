@@ -5,8 +5,6 @@
  */
 'use strict';
 
-export * from './Controller';
-export * from './Route';
-export * from './UseAfter';
-export * from './UseBefore';
-export * from './Extras';
+export interface IApiErrorData {
+    [key: string]: string | number | boolean | IApiErrorData | Array<string | number | boolean | IApiErrorData>;
+}

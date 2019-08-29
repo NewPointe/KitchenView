@@ -9,40 +9,29 @@ import { randomBytes, timingSafeEqual } from 'crypto';
 
 import { Request, Response, NextFunction } from 'express';
 import { json as buildJsonParser } from 'body-parser';
+import { Unauthorized, BadRequest } from 'http-errors';
 
-import { UseBefore } from './UseBefore';
-
-export function doRequireUser(req: Request, res: Response, next: NextFunction) {
+export function RequireUser(req: Request, res: Response, next: NextFunction) {
     if (req.user) next();
-    else throw new Error("Unauthorized");
+    else throw new Unauthorized();
 }
 
-
-export function doGenerateCsrf(req: Request, res: Response, next: NextFunction) {
+export function GenerateCsrf(req: Request, res: Response, next: NextFunction) {
     if (req.session && !("csrfToken" in req.session)) req.session.csrfToken = randomBytes(32).toString('hex');
     next();
 }
-
 
 function getCsrfFrom(thing: any): string | null {
     return (thing && "csrfToken" in thing) ? thing.csrfToken : null; // tslint:disable-line:no-unsafe-any
 }
 
-
-export function doValidateCsrf(req: Request, res: Response, next: NextFunction) {
+export function ValidateCsrf(req: Request, res: Response, next: NextFunction) {
     const sessToken = getCsrfFrom(req.session);
     const bodyToken = getCsrfFrom(req.body);
     if(sessToken !== null && bodyToken !== null && timingSafeEqual(Buffer.from(sessToken, 'utf8'), Buffer.from(bodyToken, 'utf8'))) next();
-    else throw new Error("Invalid CSRF Token");
+    else throw new BadRequest("Invalid CSRF Token");
 }
 
-
-export const doParseJson = buildJsonParser({ verify: (req, res, buf) => {
+export const ParseJson = buildJsonParser({ verify: (req, res, buf) => {
     return (req as any).rawBody = buf.toString();
 } });
-
-
-export function RequireUser() { return UseBefore(doRequireUser); }
-export function GenerateCsrf() { return UseBefore(doGenerateCsrf); }
-export function ValidateCsrf() { return UseBefore(doValidateCsrf); }
-export function ParseJson() { return UseBefore(doParseJson); }

@@ -8,38 +8,33 @@
 import { timingSafeEqual } from 'crypto';
 
 import httpError from 'http-errors';
-import { Response, NextFunction } from 'express';
-import { Controller, Get } from '../lib/cp3-express-decorators';
+
+import { Controller, Get, RouteParam, Render } from '../lib/cp3-express';
 
 import { Screen } from '../models/Screen';
 import { Queue } from '../models/Queue';
-import { Request } from '../lib/app/App';
 
-@Controller()
-export class ScreenViewController {
+export class ScreenViewController extends Controller<ScreenViewController> {
 
     @Get("/:key/:secret")
-    public getOne(req: Request<{ key: string, secret: string }>, res: Response, next: NextFunction) {
+    @Render("queues/watch")
+    public async getOne(
+        @RouteParam("key") key: string,
+        @RouteParam("secret") secret: string
+    ) {
 
-        const screenKey = req.params["key"] || "";
-        const screenSecret = req.params["secret"] || "";
-
-        Screen.findOne({
+        const screen = await Screen.findOne({
             where: {
-                viewKey: screenKey
+                viewKey: key
             },
-            include: [Queue]
-        }).then(
-            screen => {
-                if(screen) {
-                    if(timingSafeEqual(Buffer.from(screen.viewSecret, 'utf8'), Buffer.from(screenSecret, 'utf8'))) {
-                        res.render('queues/watch', { Queue: screen.queue, ViewKey: screenKey, ViewSecret: screenSecret });
-                    }
-                    else next(new httpError.Unauthorized());
-                }
-                else next(new httpError.NotFound());
-            }
-        ).catch(next);
+            include: [Queue],
+            rejectOnEmpty: true
+        });
+
+        if(timingSafeEqual(Buffer.from(screen.viewSecret, 'utf8'), Buffer.from(secret, 'utf8'))) {
+            return { Queue: screen.queue, ViewKey: key, ViewSecret: secret };
+        }
+        else throw new httpError.Unauthorized();
 
     }
 

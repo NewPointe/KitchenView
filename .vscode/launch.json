@@ -9,10 +9,9 @@
 			"request": "launch",
 			"name": "Build and Run",
 			"preLaunchTask": "npm: build",
-			"program": "${workspaceRoot}/dist/index.js",
+			"program": "${workspaceRoot}/dist/server/index.js",
 			"console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart",
-            "useWSL": true
+            "internalConsoleOptions": "openOnSessionStart"
 		}
 	]
 }

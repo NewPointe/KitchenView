@@ -19,7 +19,7 @@ block content
         else
             h2.text-center New Queue
         form.mt-4#edit-queue-form(action=`/api/queues/${ Queue ? Queue.id : '' }` method="POST")
-            input#csrfToken(type="hidden" value=Session.csrfToken)
+            input#csrfToken(type="hidden" name="csrfToken" value=Session.csrfToken)
             .form-group
                 label.m-0(for="queue-name") Name
                 small.m-0.form-text.text-muted This is the name of your Queue.
@@ -28,7 +28,7 @@ block content
                 label.m-0(for="queue-filter") Filter
                 small.m-0.form-text.text-muted This is the filter for your Queue. It's used to decide what purchases will be added.
                 - const options = { filters: FilterOptions };
-                input.js-query-builder#queue-filter(type="hidden" name="queue-filter" data-qb-class="w-100" data-qb-options=options value=Queue?Queue.filter:"")
+                input.js-query-builder#queue-filter(type="text" name="queue-filter" data-qb-class="w-100" data-qb-options=options value=Queue?Queue.filter:"")
             hr
             button.btn.btn-success(type="submit") Save
             | &nbsp;

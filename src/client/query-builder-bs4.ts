@@ -126,6 +126,7 @@ $(() => {
 
     $('input.js-query-builder').each((i, input) => {
         if(input instanceof HTMLInputElement){
+            input.type = "hidden";
             const qbOptionsString = input.dataset["qbOptions"];
             if(!qbOptionsString) return;
             const queryBuilderOptions = tryJSON<object, null>(qbOptionsString, null);
