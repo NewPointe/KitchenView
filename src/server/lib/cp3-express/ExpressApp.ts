@@ -7,7 +7,6 @@
 import express, { Express, RouterOptions } from 'express';
 
 import { Controller } from './Controller';
-import { RequestHandler } from 'restify';
 
 export class ExpressApp {
     public readonly app: Express;
