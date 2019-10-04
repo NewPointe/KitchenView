@@ -6,32 +6,18 @@ patch:
   SNYK-JS-LODASH-450202:
     - request-promise-native > request-promise-core > lodash:
         patched: '2019-07-05T05:52:34.857Z'
-      snyk > @snyk/dep-graph > lodash:
-        patched: '2019-07-05T06:23:05.092Z'
     - winston > async > lodash:
         patched: '2019-07-05T05:52:34.857Z'
-      snyk > inquirer > lodash:
-        patched: '2019-07-05T06:23:05.092Z'
     - tedious > adal-node > async > lodash:
         patched: '2019-07-05T05:52:34.857Z'
-      snyk > snyk-config > lodash:
-        patched: '2019-07-05T06:23:05.092Z'
     - pug > pug-code-gen > constantinople > babel-types > lodash:
         patched: '2019-07-05T05:52:34.857Z'
-      snyk > snyk-mvn-plugin > lodash:
-        patched: '2019-07-05T06:23:05.092Z'
     - pug > pug-filters > constantinople > babel-types > lodash:
         patched: '2019-07-05T05:52:34.857Z'
-      snyk > snyk-nodejs-lockfile-parser > lodash:
-        patched: '2019-07-05T06:23:05.092Z'
     - pug > pug-code-gen > pug-attrs > constantinople > babel-types > lodash:
         patched: '2019-07-05T05:52:34.857Z'
-      snyk > snyk-nuget-plugin > lodash:
-        patched: '2019-07-05T06:23:05.092Z'
     - sequelize > lodash:
         patched: '2019-07-05T05:52:34.857Z'
-      snyk > @snyk/dep-graph > graphlib > lodash:
-        patched: '2019-07-05T06:23:05.092Z'
     - snyk > snyk-go-plugin > graphlib > lodash:
         patched: '2019-07-05T06:23:05.092Z'
     - snyk > snyk-nodejs-lockfile-parser > graphlib > lodash:
@@ -40,3 +26,22 @@ patch:
         patched: '2019-07-05T06:23:05.092Z'
     - snyk > lodash:
         patched: '2019-07-05T06:23:05.092Z'
+    - snyk > @snyk/dep-graph > lodash:
+        patched: '2019-07-05T06:23:05.092Z'
+    - snyk > inquirer > lodash:
+        patched: '2019-07-05T06:23:05.092Z'
+    - snyk > snyk-config > lodash:
+        patched: '2019-07-05T06:23:05.092Z'
+    - snyk > snyk-mvn-plugin > lodash:
+        patched: '2019-07-05T06:23:05.092Z'
+    - snyk > snyk-nodejs-lockfile-parser > lodash:
+        patched: '2019-07-05T06:23:05.092Z'
+    - snyk > snyk-nuget-plugin > lodash:
+        patched: '2019-07-05T06:23:05.092Z'
+    - snyk > @snyk/dep-graph > graphlib > lodash:
+        patched: '2019-07-05T06:23:05.092Z'
+  SNYK-JS-HTTPSPROXYAGENT-469131:
+    - snyk > proxy-agent > https-proxy-agent:
+        patched: '2019-10-04T05:44:44.876Z'
+    - snyk > proxy-agent > pac-proxy-agent > https-proxy-agent:
+        patched: '2019-10-04T05:44:44.876Z'
