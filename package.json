@@ -34,7 +34,7 @@
     "sequelize": "^5.17.0",
     "sequelize-typescript": "^1.0.0",
     "serve-favicon": "^2.5.0",
-    "snyk": "^1.221.1",
+    "snyk": "^1.258.2",
     "winston": "^3.2.1",
     "ws": "^7.1.2"
   },
